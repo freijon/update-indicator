@@ -1,0 +1,21 @@
+I never really was satisfied with the update management and that the update-manager just pops up without any indication. So i made this little application which integrates in the application menu and notifies the user about updates.
+
+To build the vala sources, you will need the following dependencies:
+
+- libgtk2.0-dev
+- libgconf2-dev
+- libappindicator3-dev
+- libnotify-dev
+- libglib2.0-dev
+- libvala-0.1x-dev
+- valac
+
+Just run the usual:
+
+./configure
+make
+make install
+
+You can use the "--with-preferences" option to run the preferences on start.
+
+Since I do not have the knowledge yet to create makefiles, you will have to move the icons and ui manually. Just copy the folders "icons" and "ui" as delivered to "/usr/share/indicator-updatemanager"
