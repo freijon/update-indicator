@@ -23,7 +23,7 @@ using Gtk;
 
 public class PreferencesDialog
 {
-	private const string UI_FILE = "/usr/share/update-indicator/ui/UpdateIndicator.glade";
+	private const string UI_FILE = "/usr/local/share/update_indicator/UpdateIndicator.glade";
 	
 	private Builder builder;
 	

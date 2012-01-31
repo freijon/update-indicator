@@ -95,7 +95,7 @@ GType preferences_dialog_get_type (void) G_GNUC_CONST;
 enum  {
 	PREFERENCES_DIALOG_DUMMY_PROPERTY
 };
-#define PREFERENCES_DIALOG_UI_FILE "/usr/share/update-indicator/ui/UpdateIndicator.glade"
+#define PREFERENCES_DIALOG_UI_FILE "/usr/local/share/update_indicator/UpdateIndicator.glade"
 PreferencesDialog* preferences_dialog_new (void);
 PreferencesDialog* preferences_dialog_construct (GType object_type);
 static void preferences_dialog_update_from_gconf (PreferencesDialog* self);

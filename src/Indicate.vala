@@ -33,9 +33,9 @@ public class Indicate
 	
 	private UpdateChecker checker;
 	
-	private const string ACTIVE_ICON = "/usr/share/indicator-updatemanager/icons/software-update-available.png";
-	private const string PASSIVE_ICON = "/usr/share/indicator-updatemanager/icons/no-update-available.png";
-	private const string GLADE_FILE = "/usr/share/indicator-updatemanager/ui/UpdateIndicator.glade";
+	private const string ACTIVE_ICON = "/usr/local/share/update_indicator/software-update-available.png";
+	private const string PASSIVE_ICON = "/usr/local/share/update_indicator/no-update-available.png";
+	private const string GLADE_FILE = "/usr/local/share/update_indicator/UpdateIndicator.glade";
 		
 	public Indicate()
 	{

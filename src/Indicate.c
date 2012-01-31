@@ -123,9 +123,9 @@ GType update_checker_get_type (void) G_GNUC_CONST;
 enum  {
 	INDICATE_DUMMY_PROPERTY
 };
-#define INDICATE_ACTIVE_ICON "/usr/share/indicator-updatemanager/icons/software-update-available.png"
-#define INDICATE_PASSIVE_ICON "/usr/share/indicator-updatemanager/icons/no-update-available.png"
-#define INDICATE_GLADE_FILE "/usr/share/indicator-updatemanager/ui/UpdateIndicator.glade"
+#define INDICATE_ACTIVE_ICON "/usr/local/share/update_indicator/software-update-available.png"
+#define INDICATE_PASSIVE_ICON "/usr/local/share/update_indicator/no-update-available.png"
+#define INDICATE_GLADE_FILE "/usr/local/share/update_indicator/UpdateIndicator.glade"
 Indicate* indicate_new (void);
 Indicate* indicate_construct (GType object_type);
 GType gconf_interface_key_get_type (void) G_GNUC_CONST;
