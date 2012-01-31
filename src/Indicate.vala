@@ -22,6 +22,7 @@
 using Gtk;
 using AppIndicator;
 using Notify;
+using Cairo;
 
 public class Indicate
 {
@@ -42,7 +43,7 @@ public class Indicate
 		int check_interval = GConfInterface.get_int (GConfInterface.Key.CHECK_INTERVAL);
 		
 		indicator = new Indicator ("update-notifier", "update-indicator", AppIndicator.IndicatorCategory.APPLICATION_STATUS);
-		set_icon(PASSIVE_ICON);
+		indicator.set_icon(PASSIVE_ICON);
 		indicator.set_status (GConfInterface.get_bool (GConfInterface.Key.SHOW_PASSIVE_ICON) ? AppIndicator.IndicatorStatus.ACTIVE : AppIndicator.IndicatorStatus.PASSIVE);
 		
 		checker = new UpdateChecker(check_interval);
@@ -117,7 +118,7 @@ public class Indicate
 		
 		if (count > 0)
 		{
-			set_icon(ACTIVE_ICON);
+			set_active_icon(count);
 			indicator.set_status (AppIndicator.IndicatorStatus.ACTIVE);
 			
 			how_many.label = count.to_string() + (count == 1 ? " update" : " updates");
@@ -154,7 +155,7 @@ public class Indicate
 		}
 		else
 		{
-			set_icon(PASSIVE_ICON);
+			indicator.set_icon(PASSIVE_ICON);
 			indicator.set_status (GConfInterface.get_bool (GConfInterface.Key.SHOW_PASSIVE_ICON) ? AppIndicator.IndicatorStatus.ACTIVE : AppIndicator.IndicatorStatus.PASSIVE);
 			how_many.label = "No updates available";
 			how_many.sensitive = false;
@@ -173,9 +174,28 @@ public class Indicate
 		}
 	}
 	
-	private void set_icon(string icon)
+	private void set_active_icon(int count)
 	{
-		indicator.set_icon(icon);
+		var icon = new Cairo.ImageSurface.from_png("/usr/local/share/update_indicator/software-update-available-empty.png");
+		var co = new Context(icon);
+
+		var ex = TextExtents();
+		ex.x_bearing = 10;
+		ex.width = 10;
+		ex.height = 10;
+
+		co.set_source_rgb(0.2, 0.2, 0.2);
+		co.select_font_face ("Ubuntu", Cairo.FontSlant.NORMAL, Cairo.FontWeight.NORMAL);
+		co.set_font_size(20);
+		co.text_extents(@"$(count)", out ex);
+		co.move_to(24 - 1 - ex.width / 2, 24 -1 + ex.height / 2 );
+		co.show_text(@"$(count)");
+
+		icon.write_to_png ("/tmp/icon.png");
+		icon.show_page();
+		icon.finish();
+
+		indicator.set_icon("/tmp/icon.png");
 	}
 	
 	private void on_execute_clicked (Gtk.Widget sender)

@@ -30,6 +30,9 @@
 #include <string.h>
 #include <stdio.h>
 #include <libnotify/notify.h>
+#include <cairo.h>
+#include <float.h>
+#include <math.h>
 #include <gobject/gvaluecollector.h>
 
 
@@ -59,6 +62,8 @@ typedef struct _UpdateCheckerClass UpdateCheckerClass;
 #define GCONF_INTERFACE_TYPE_KEY (gconf_interface_key_get_type ())
 #define _g_error_free0(var) ((var == NULL) ? NULL : (var = (g_error_free (var), NULL)))
 #define _g_free0(var) (var = (g_free (var), NULL))
+#define _cairo_destroy0(var) ((var == NULL) ? NULL : (var = (cairo_destroy (var), NULL)))
+#define _cairo_surface_destroy0(var) ((var == NULL) ? NULL : (var = (cairo_surface_destroy (var), NULL)))
 
 #define TYPE_PREFERENCES_DIALOG (preferences_dialog_get_type ())
 #define PREFERENCES_DIALOG(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_PREFERENCES_DIALOG, PreferencesDialog))
@@ -130,7 +135,6 @@ Indicate* indicate_new (void);
 Indicate* indicate_construct (GType object_type);
 GType gconf_interface_key_get_type (void) G_GNUC_CONST;
 gint gconf_interface_get_int (GConfInterfaceKey key);
-static void indicate_set_icon (Indicate* self, const gchar* icon);
 gboolean gconf_interface_get_bool (GConfInterfaceKey key);
 UpdateChecker* update_checker_new (gint update_interval);
 UpdateChecker* update_checker_construct (GType object_type, gint update_interval);
@@ -148,6 +152,7 @@ static void _indicate_on_preferences_clicked_gtk_menu_item_activate (GtkMenuItem
 static void indicate_on_about_clicked (Indicate* self, GtkWidget* sender);
 static void _indicate_on_about_clicked_gtk_menu_item_activate (GtkMenuItem* _sender, gpointer self);
 static void _gtk_main_quit_gtk_menu_item_activate (GtkMenuItem* _sender, gpointer self);
+static void indicate_set_active_icon (Indicate* self, gint count);
 PreferencesDialog* preferences_dialog_new (void);
 PreferencesDialog* preferences_dialog_construct (GType object_type);
 gpointer preferences_dialog_ref (gpointer instance);
@@ -182,14 +187,15 @@ Indicate* indicate_construct (GType object_type) {
 	gint _tmp0_ = 0;
 	gint check_interval;
 	AppIndicator* _tmp1_;
-	AppIndicatorStatus _tmp2_ = 0;
-	gboolean _tmp3_ = FALSE;
-	AppIndicator* _tmp4_;
-	AppIndicatorStatus _tmp5_;
-	gint _tmp6_;
-	UpdateChecker* _tmp7_;
+	AppIndicator* _tmp2_;
+	AppIndicatorStatus _tmp3_ = 0;
+	gboolean _tmp4_ = FALSE;
+	AppIndicator* _tmp5_;
+	AppIndicatorStatus _tmp6_;
+	gint _tmp7_;
 	UpdateChecker* _tmp8_;
-	gboolean _tmp9_ = FALSE;
+	UpdateChecker* _tmp9_;
+	gboolean _tmp10_ = FALSE;
 	GError * _inner_error_ = NULL;
 	self = (Indicate*) g_type_create_instance (object_type);
 	_tmp0_ = gconf_interface_get_int (GCONF_INTERFACE_KEY_CHECK_INTERVAL);
@@ -197,32 +203,33 @@ Indicate* indicate_construct (GType object_type) {
 	_tmp1_ = app_indicator_new ("update-notifier", "update-indicator", APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
 	_g_object_unref0 (self->priv->indicator);
 	self->priv->indicator = _tmp1_;
-	indicate_set_icon (self, INDICATE_PASSIVE_ICON);
-	_tmp3_ = gconf_interface_get_bool (GCONF_INTERFACE_KEY_SHOW_PASSIVE_ICON);
-	if (_tmp3_) {
-		_tmp2_ = APP_INDICATOR_STATUS_ACTIVE;
+	_tmp2_ = self->priv->indicator;
+	app_indicator_set_icon (_tmp2_, INDICATE_PASSIVE_ICON);
+	_tmp4_ = gconf_interface_get_bool (GCONF_INTERFACE_KEY_SHOW_PASSIVE_ICON);
+	if (_tmp4_) {
+		_tmp3_ = APP_INDICATOR_STATUS_ACTIVE;
 	} else {
-		_tmp2_ = APP_INDICATOR_STATUS_PASSIVE;
+		_tmp3_ = APP_INDICATOR_STATUS_PASSIVE;
 	}
-	_tmp4_ = self->priv->indicator;
-	_tmp5_ = _tmp2_;
-	app_indicator_set_status (_tmp4_, _tmp5_);
-	_tmp6_ = check_interval;
-	_tmp7_ = update_checker_new (_tmp6_);
+	_tmp5_ = self->priv->indicator;
+	_tmp6_ = _tmp3_;
+	app_indicator_set_status (_tmp5_, _tmp6_);
+	_tmp7_ = check_interval;
+	_tmp8_ = update_checker_new (_tmp7_);
 	_update_checker_unref0 (self->priv->checker);
-	self->priv->checker = _tmp7_;
-	_tmp8_ = self->priv->checker;
-	g_signal_connect (_tmp8_, "update-event", (GCallback) _indicate_on_update_update_checker_update_event, self);
+	self->priv->checker = _tmp8_;
+	_tmp9_ = self->priv->checker;
+	g_signal_connect (_tmp9_, "update-event", (GCallback) _indicate_on_update_update_checker_update_event, self);
 	indicate_build_menu (self);
-	_tmp9_ = g_thread_supported ();
-	if (_tmp9_) {
+	_tmp10_ = g_thread_supported ();
+	if (_tmp10_) {
 		{
-			UpdateChecker* _tmp10_;
-			GThread* _tmp11_ = NULL;
-			GThread* _tmp12_;
-			_tmp10_ = self->priv->checker;
-			_tmp11_ = g_thread_create (_update_checker_check_for_updates_gthread_func, _tmp10_, FALSE, &_inner_error_);
-			_tmp12_ = _tmp11_;
+			UpdateChecker* _tmp11_;
+			GThread* _tmp12_ = NULL;
+			GThread* _tmp13_;
+			_tmp11_ = self->priv->checker;
+			_tmp12_ = g_thread_create (_update_checker_check_for_updates_gthread_func, _tmp11_, FALSE, &_inner_error_);
+			_tmp13_ = _tmp12_;
 			if (_inner_error_ != NULL) {
 				if (_inner_error_->domain == G_THREAD_ERROR) {
 					goto __catch0_g_thread_error;
@@ -231,17 +238,17 @@ Indicate* indicate_construct (GType object_type) {
 				g_clear_error (&_inner_error_);
 				return NULL;
 			}
-			self->priv->thread = _tmp12_;
+			self->priv->thread = _tmp13_;
 		}
 		goto __finally0;
 		__catch0_g_thread_error:
 		{
 			GError* e = NULL;
-			FILE* _tmp13_;
+			FILE* _tmp14_;
 			e = _inner_error_;
 			_inner_error_ = NULL;
-			_tmp13_ = stderr;
-			fprintf (_tmp13_, "Couldn't create thread\n");
+			_tmp14_ = stderr;
+			fprintf (_tmp14_, "Couldn't create thread\n");
 			_g_error_free0 (e);
 		}
 		__finally0:
@@ -251,9 +258,9 @@ Indicate* indicate_construct (GType object_type) {
 			return NULL;
 		}
 	} else {
-		FILE* _tmp14_;
-		_tmp14_ = stderr;
-		fprintf (_tmp14_, "Threading not supported. Aborting...\n");
+		FILE* _tmp15_;
+		_tmp15_ = stderr;
+		fprintf (_tmp15_, "Threading not supported. Aborting...\n");
 		gtk_main_quit ();
 	}
 	notify_init ("Update Indicator");
@@ -416,191 +423,193 @@ static void indicate_on_update (Indicate* self, UpdateChecker* sender, gchar** p
 	}
 	_tmp5_ = count;
 	if (_tmp5_ > 0) {
-		AppIndicator* _tmp6_;
-		const gchar* _tmp7_ = NULL;
-		gint _tmp8_;
-		GtkMenuItem* _tmp9_;
-		gint _tmp10_;
-		gchar* _tmp11_ = NULL;
-		gchar* _tmp12_;
-		const gchar* _tmp13_;
-		gchar* _tmp14_;
+		gint _tmp6_;
+		AppIndicator* _tmp7_;
+		const gchar* _tmp8_ = NULL;
+		gint _tmp9_;
+		GtkMenuItem* _tmp10_;
+		gint _tmp11_;
+		gchar* _tmp12_ = NULL;
+		gchar* _tmp13_;
+		const gchar* _tmp14_;
 		gchar* _tmp15_;
-		GtkMenuItem* _tmp16_;
-		GtkMenu* _tmp17_;
+		gchar* _tmp16_;
+		GtkMenuItem* _tmp17_;
 		GtkMenu* _tmp18_;
+		GtkMenu* _tmp19_;
 		GtkMenu* submenu_how_many;
-		gchar** _tmp19_;
-		gint _tmp19__length1;
-		GtkMenuItem* _tmp25_;
-		GtkMenu* _tmp26_;
+		gchar** _tmp20_;
+		gint _tmp20__length1;
+		GtkMenuItem* _tmp26_;
 		GtkMenu* _tmp27_;
-		gboolean _tmp28_ = FALSE;
-		indicate_set_icon (self, INDICATE_ACTIVE_ICON);
-		_tmp6_ = self->priv->indicator;
-		app_indicator_set_status (_tmp6_, APP_INDICATOR_STATUS_ACTIVE);
-		_tmp8_ = count;
-		if (_tmp8_ == 1) {
-			_tmp7_ = " update";
+		GtkMenu* _tmp28_;
+		gboolean _tmp29_ = FALSE;
+		_tmp6_ = count;
+		indicate_set_active_icon (self, _tmp6_);
+		_tmp7_ = self->priv->indicator;
+		app_indicator_set_status (_tmp7_, APP_INDICATOR_STATUS_ACTIVE);
+		_tmp9_ = count;
+		if (_tmp9_ == 1) {
+			_tmp8_ = " update";
 		} else {
-			_tmp7_ = " updates";
+			_tmp8_ = " updates";
 		}
-		_tmp9_ = self->priv->how_many;
-		_tmp10_ = count;
-		_tmp11_ = g_strdup_printf ("%i", _tmp10_);
-		_tmp12_ = _tmp11_;
-		_tmp13_ = _tmp7_;
-		_tmp14_ = g_strconcat (_tmp12_, _tmp13_, NULL);
-		_tmp15_ = _tmp14_;
-		gtk_menu_item_set_label (_tmp9_, _tmp15_);
-		_g_free0 (_tmp15_);
-		_g_free0 (_tmp12_);
-		_tmp16_ = self->priv->how_many;
-		gtk_widget_set_sensitive ((GtkWidget*) _tmp16_, TRUE);
-		_tmp17_ = (GtkMenu*) gtk_menu_new ();
-		_tmp18_ = g_object_ref_sink (_tmp17_);
-		submenu_how_many = _tmp18_;
-		_tmp19_ = packages;
-		_tmp19__length1 = packages_length1;
+		_tmp10_ = self->priv->how_many;
+		_tmp11_ = count;
+		_tmp12_ = g_strdup_printf ("%i", _tmp11_);
+		_tmp13_ = _tmp12_;
+		_tmp14_ = _tmp8_;
+		_tmp15_ = g_strconcat (_tmp13_, _tmp14_, NULL);
+		_tmp16_ = _tmp15_;
+		gtk_menu_item_set_label (_tmp10_, _tmp16_);
+		_g_free0 (_tmp16_);
+		_g_free0 (_tmp13_);
+		_tmp17_ = self->priv->how_many;
+		gtk_widget_set_sensitive ((GtkWidget*) _tmp17_, TRUE);
+		_tmp18_ = (GtkMenu*) gtk_menu_new ();
+		_tmp19_ = g_object_ref_sink (_tmp18_);
+		submenu_how_many = _tmp19_;
+		_tmp20_ = packages;
+		_tmp20__length1 = packages_length1;
 		{
 			gchar** package_collection = NULL;
 			gint package_collection_length1 = 0;
 			gint _package_collection_size_ = 0;
 			gint package_it = 0;
-			package_collection = _tmp19_;
-			package_collection_length1 = _tmp19__length1;
-			for (package_it = 0; package_it < _tmp19__length1; package_it = package_it + 1) {
-				gchar* _tmp20_;
+			package_collection = _tmp20_;
+			package_collection_length1 = _tmp20__length1;
+			for (package_it = 0; package_it < _tmp20__length1; package_it = package_it + 1) {
+				gchar* _tmp21_;
 				gchar* package = NULL;
-				_tmp20_ = g_strdup (package_collection[package_it]);
-				package = _tmp20_;
+				_tmp21_ = g_strdup (package_collection[package_it]);
+				package = _tmp21_;
 				{
-					GtkMenu* _tmp21_;
-					const gchar* _tmp22_;
-					GtkMenuItem* _tmp23_;
+					GtkMenu* _tmp22_;
+					const gchar* _tmp23_;
 					GtkMenuItem* _tmp24_;
-					_tmp21_ = submenu_how_many;
-					_tmp22_ = package;
-					_tmp23_ = (GtkMenuItem*) gtk_menu_item_new_with_label (_tmp22_);
-					_tmp24_ = g_object_ref_sink (_tmp23_);
-					gtk_container_add ((GtkContainer*) _tmp21_, (GtkWidget*) _tmp24_);
-					_g_object_unref0 (_tmp24_);
+					GtkMenuItem* _tmp25_;
+					_tmp22_ = submenu_how_many;
+					_tmp23_ = package;
+					_tmp24_ = (GtkMenuItem*) gtk_menu_item_new_with_label (_tmp23_);
+					_tmp25_ = g_object_ref_sink (_tmp24_);
+					gtk_container_add ((GtkContainer*) _tmp22_, (GtkWidget*) _tmp25_);
+					_g_object_unref0 (_tmp25_);
 					_g_free0 (package);
 				}
 			}
 		}
-		_tmp25_ = self->priv->how_many;
-		_tmp26_ = submenu_how_many;
-		gtk_menu_item_set_submenu (_tmp25_, _tmp26_);
+		_tmp26_ = self->priv->how_many;
 		_tmp27_ = submenu_how_many;
-		gtk_widget_show_all ((GtkWidget*) _tmp27_);
-		_tmp28_ = gconf_interface_get_bool (GCONF_INTERFACE_KEY_NOTIFY);
-		if (_tmp28_) {
-			gchar* _tmp29_;
+		gtk_menu_item_set_submenu (_tmp26_, _tmp27_);
+		_tmp28_ = submenu_how_many;
+		gtk_widget_show_all ((GtkWidget*) _tmp28_);
+		_tmp29_ = gconf_interface_get_bool (GCONF_INTERFACE_KEY_NOTIFY);
+		if (_tmp29_) {
+			gchar* _tmp30_;
 			gchar* package_list;
-			gchar** _tmp30_;
-			gint _tmp30__length1;
-			const gchar* _tmp45_ = NULL;
-			gint _tmp46_;
+			gchar** _tmp31_;
+			gint _tmp31__length1;
+			const gchar* _tmp46_ = NULL;
 			gint _tmp47_;
-			gchar* _tmp48_ = NULL;
-			gchar* _tmp49_;
+			gint _tmp48_;
+			gchar* _tmp49_ = NULL;
 			gchar* _tmp50_;
 			gchar* _tmp51_;
-			const gchar* _tmp52_;
-			gchar* _tmp53_;
+			gchar* _tmp52_;
+			const gchar* _tmp53_;
 			gchar* _tmp54_;
 			gchar* _tmp55_;
 			gchar* _tmp56_;
-			const gchar* _tmp57_;
-			NotifyNotification* _tmp58_;
+			gchar* _tmp57_;
+			const gchar* _tmp58_;
 			NotifyNotification* _tmp59_;
+			NotifyNotification* _tmp60_;
 			NotifyNotification* notify;
-			_tmp29_ = g_strdup ("");
-			package_list = _tmp29_;
-			_tmp30_ = packages;
-			_tmp30__length1 = packages_length1;
+			_tmp30_ = g_strdup ("");
+			package_list = _tmp30_;
+			_tmp31_ = packages;
+			_tmp31__length1 = packages_length1;
 			{
 				gchar** package_collection = NULL;
 				gint package_collection_length1 = 0;
 				gint _package_collection_size_ = 0;
 				gint package_it = 0;
-				package_collection = _tmp30_;
-				package_collection_length1 = _tmp30__length1;
-				for (package_it = 0; package_it < _tmp30__length1; package_it = package_it + 1) {
-					gchar* _tmp31_;
+				package_collection = _tmp31_;
+				package_collection_length1 = _tmp31__length1;
+				for (package_it = 0; package_it < _tmp31__length1; package_it = package_it + 1) {
+					gchar* _tmp32_;
 					gchar* package = NULL;
-					_tmp31_ = g_strdup (package_collection[package_it]);
-					package = _tmp31_;
+					_tmp32_ = g_strdup (package_collection[package_it]);
+					package = _tmp32_;
 					{
-						const gchar* _tmp32_ = NULL;
-						const gchar* _tmp33_;
-						gchar** _tmp34_;
-						gint _tmp34__length1;
-						gint _tmp35_;
-						const gchar* _tmp36_;
+						const gchar* _tmp33_ = NULL;
+						const gchar* _tmp34_;
+						gchar** _tmp35_;
+						gint _tmp35__length1;
+						gint _tmp36_;
 						const gchar* _tmp37_;
 						const gchar* _tmp38_;
-						gchar* _tmp39_;
+						const gchar* _tmp39_;
 						gchar* _tmp40_;
-						const gchar* _tmp41_;
-						gchar* _tmp42_;
+						gchar* _tmp41_;
+						const gchar* _tmp42_;
 						gchar* _tmp43_;
 						gchar* _tmp44_;
-						_tmp33_ = package;
-						_tmp34_ = packages;
-						_tmp34__length1 = packages_length1;
-						_tmp35_ = count;
-						_tmp36_ = _tmp34_[_tmp35_ - 1];
-						if (g_strcmp0 (_tmp33_, _tmp36_) == 0) {
-							_tmp32_ = "";
+						gchar* _tmp45_;
+						_tmp34_ = package;
+						_tmp35_ = packages;
+						_tmp35__length1 = packages_length1;
+						_tmp36_ = count;
+						_tmp37_ = _tmp35_[_tmp36_ - 1];
+						if (g_strcmp0 (_tmp34_, _tmp37_) == 0) {
+							_tmp33_ = "";
 						} else {
-							_tmp32_ = "\n";
+							_tmp33_ = "\n";
 						}
-						_tmp37_ = package_list;
-						_tmp38_ = package;
-						_tmp39_ = g_strconcat ("- ", _tmp38_, NULL);
-						_tmp40_ = _tmp39_;
-						_tmp41_ = _tmp32_;
-						_tmp42_ = g_strconcat (_tmp40_, _tmp41_, NULL);
-						_tmp43_ = _tmp42_;
-						_tmp44_ = g_strconcat (_tmp37_, _tmp43_, NULL);
+						_tmp38_ = package_list;
+						_tmp39_ = package;
+						_tmp40_ = g_strconcat ("- ", _tmp39_, NULL);
+						_tmp41_ = _tmp40_;
+						_tmp42_ = _tmp33_;
+						_tmp43_ = g_strconcat (_tmp41_, _tmp42_, NULL);
+						_tmp44_ = _tmp43_;
+						_tmp45_ = g_strconcat (_tmp38_, _tmp44_, NULL);
 						_g_free0 (package_list);
-						package_list = _tmp44_;
-						_g_free0 (_tmp43_);
-						_g_free0 (_tmp40_);
+						package_list = _tmp45_;
+						_g_free0 (_tmp44_);
+						_g_free0 (_tmp41_);
 						_g_free0 (package);
 					}
 				}
 			}
-			_tmp46_ = count;
-			if (_tmp46_ == 1) {
-				_tmp45_ = "update";
-			} else {
-				_tmp45_ = "updates";
-			}
 			_tmp47_ = count;
-			_tmp48_ = g_strdup_printf ("%i", _tmp47_);
-			_tmp49_ = _tmp48_;
-			_tmp50_ = g_strconcat (_tmp49_, " new ", NULL);
-			_tmp51_ = _tmp50_;
-			_tmp52_ = _tmp45_;
-			_tmp53_ = g_strconcat (_tmp51_, _tmp52_, NULL);
-			_tmp54_ = _tmp53_;
-			_tmp55_ = g_strconcat (_tmp54_, " available", NULL);
-			_tmp56_ = _tmp55_;
-			_tmp57_ = package_list;
-			_tmp58_ = notify_notification_new (_tmp56_, _tmp57_, INDICATE_ACTIVE_ICON);
-			_tmp59_ = _tmp58_;
-			_g_free0 (_tmp56_);
-			_g_free0 (_tmp54_);
-			_g_free0 (_tmp51_);
-			_g_free0 (_tmp49_);
-			notify = _tmp59_;
+			if (_tmp47_ == 1) {
+				_tmp46_ = "update";
+			} else {
+				_tmp46_ = "updates";
+			}
+			_tmp48_ = count;
+			_tmp49_ = g_strdup_printf ("%i", _tmp48_);
+			_tmp50_ = _tmp49_;
+			_tmp51_ = g_strconcat (_tmp50_, " new ", NULL);
+			_tmp52_ = _tmp51_;
+			_tmp53_ = _tmp46_;
+			_tmp54_ = g_strconcat (_tmp52_, _tmp53_, NULL);
+			_tmp55_ = _tmp54_;
+			_tmp56_ = g_strconcat (_tmp55_, " available", NULL);
+			_tmp57_ = _tmp56_;
+			_tmp58_ = package_list;
+			_tmp59_ = notify_notification_new (_tmp57_, _tmp58_, INDICATE_ACTIVE_ICON);
+			_tmp60_ = _tmp59_;
+			_g_free0 (_tmp57_);
+			_g_free0 (_tmp55_);
+			_g_free0 (_tmp52_);
+			_g_free0 (_tmp50_);
+			notify = _tmp60_;
 			{
-				NotifyNotification* _tmp60_;
-				_tmp60_ = notify;
-				notify_notification_show (_tmp60_, &_inner_error_);
+				NotifyNotification* _tmp61_;
+				_tmp61_ = notify;
+				notify_notification_show (_tmp61_, &_inner_error_);
 				if (_inner_error_ != NULL) {
 					goto __catch1_g_error;
 				}
@@ -609,15 +618,15 @@ static void indicate_on_update (Indicate* self, UpdateChecker* sender, gchar** p
 			__catch1_g_error:
 			{
 				GError* e = NULL;
-				FILE* _tmp61_;
-				GError* _tmp62_;
-				const gchar* _tmp63_;
+				FILE* _tmp62_;
+				GError* _tmp63_;
+				const gchar* _tmp64_;
 				e = _inner_error_;
 				_inner_error_ = NULL;
-				_tmp61_ = stderr;
-				_tmp62_ = e;
-				_tmp63_ = _tmp62_->message;
-				fprintf (_tmp61_, "Could not show notification: %s\n", _tmp63_);
+				_tmp62_ = stderr;
+				_tmp63_ = e;
+				_tmp64_ = _tmp63_->message;
+				fprintf (_tmp62_, "Could not show notification: %s\n", _tmp64_);
 				_g_error_free0 (e);
 			}
 			__finally1:
@@ -634,37 +643,39 @@ static void indicate_on_update (Indicate* self, UpdateChecker* sender, gchar** p
 		}
 		_g_object_unref0 (submenu_how_many);
 	} else {
-		AppIndicatorStatus _tmp64_ = 0;
-		gboolean _tmp65_ = FALSE;
-		AppIndicator* _tmp66_;
-		AppIndicatorStatus _tmp67_;
-		GtkMenuItem* _tmp68_;
-		GtkMenuItem* _tmp69_;
-		gboolean _tmp70_ = FALSE;
-		indicate_set_icon (self, INDICATE_PASSIVE_ICON);
-		_tmp65_ = gconf_interface_get_bool (GCONF_INTERFACE_KEY_SHOW_PASSIVE_ICON);
-		if (_tmp65_) {
-			_tmp64_ = APP_INDICATOR_STATUS_ACTIVE;
+		AppIndicator* _tmp65_;
+		AppIndicatorStatus _tmp66_ = 0;
+		gboolean _tmp67_ = FALSE;
+		AppIndicator* _tmp68_;
+		AppIndicatorStatus _tmp69_;
+		GtkMenuItem* _tmp70_;
+		GtkMenuItem* _tmp71_;
+		gboolean _tmp72_ = FALSE;
+		_tmp65_ = self->priv->indicator;
+		app_indicator_set_icon (_tmp65_, INDICATE_PASSIVE_ICON);
+		_tmp67_ = gconf_interface_get_bool (GCONF_INTERFACE_KEY_SHOW_PASSIVE_ICON);
+		if (_tmp67_) {
+			_tmp66_ = APP_INDICATOR_STATUS_ACTIVE;
 		} else {
-			_tmp64_ = APP_INDICATOR_STATUS_PASSIVE;
+			_tmp66_ = APP_INDICATOR_STATUS_PASSIVE;
 		}
-		_tmp66_ = self->priv->indicator;
-		_tmp67_ = _tmp64_;
-		app_indicator_set_status (_tmp66_, _tmp67_);
-		_tmp68_ = self->priv->how_many;
-		gtk_menu_item_set_label (_tmp68_, "No updates available");
-		_tmp69_ = self->priv->how_many;
-		gtk_widget_set_sensitive ((GtkWidget*) _tmp69_, FALSE);
-		_tmp70_ = gconf_interface_get_bool (GCONF_INTERFACE_KEY_NOTIFY);
-		if (_tmp70_) {
-			NotifyNotification* _tmp71_;
+		_tmp68_ = self->priv->indicator;
+		_tmp69_ = _tmp66_;
+		app_indicator_set_status (_tmp68_, _tmp69_);
+		_tmp70_ = self->priv->how_many;
+		gtk_menu_item_set_label (_tmp70_, "No updates available");
+		_tmp71_ = self->priv->how_many;
+		gtk_widget_set_sensitive ((GtkWidget*) _tmp71_, FALSE);
+		_tmp72_ = gconf_interface_get_bool (GCONF_INTERFACE_KEY_NOTIFY);
+		if (_tmp72_) {
+			NotifyNotification* _tmp73_;
 			NotifyNotification* notify;
-			_tmp71_ = notify_notification_new ("Updates installed", "Your system is now up-to-date", INDICATE_PASSIVE_ICON);
-			notify = _tmp71_;
+			_tmp73_ = notify_notification_new ("Updates installed", "Your system is now up-to-date", INDICATE_PASSIVE_ICON);
+			notify = _tmp73_;
 			{
-				NotifyNotification* _tmp72_;
-				_tmp72_ = notify;
-				notify_notification_show (_tmp72_, &_inner_error_);
+				NotifyNotification* _tmp74_;
+				_tmp74_ = notify;
+				notify_notification_show (_tmp74_, &_inner_error_);
 				if (_inner_error_ != NULL) {
 					goto __catch2_g_error;
 				}
@@ -673,15 +684,15 @@ static void indicate_on_update (Indicate* self, UpdateChecker* sender, gchar** p
 			__catch2_g_error:
 			{
 				GError* e = NULL;
-				FILE* _tmp73_;
-				GError* _tmp74_;
-				const gchar* _tmp75_;
+				FILE* _tmp75_;
+				GError* _tmp76_;
+				const gchar* _tmp77_;
 				e = _inner_error_;
 				_inner_error_ = NULL;
-				_tmp73_ = stderr;
-				_tmp74_ = e;
-				_tmp75_ = _tmp74_->message;
-				fprintf (_tmp73_, "Could not show notification: %s\n", _tmp75_);
+				_tmp75_ = stderr;
+				_tmp76_ = e;
+				_tmp77_ = _tmp76_->message;
+				fprintf (_tmp75_, "Could not show notification: %s\n", _tmp77_);
 				_g_error_free0 (e);
 			}
 			__finally2:
@@ -697,14 +708,59 @@ static void indicate_on_update (Indicate* self, UpdateChecker* sender, gchar** p
 }
 
 
-static void indicate_set_icon (Indicate* self, const gchar* icon) {
-	AppIndicator* _tmp0_;
-	const gchar* _tmp1_;
+static void indicate_set_active_icon (Indicate* self, gint count) {
+	cairo_surface_t* _tmp0_;
+	cairo_surface_t* icon;
+	cairo_t* _tmp1_;
+	cairo_t* co;
+	cairo_text_extents_t ex = {0};
+	gint _tmp2_;
+	gchar* _tmp3_ = NULL;
+	gchar* _tmp4_;
+	cairo_text_extents_t _tmp5_ = {0};
+	cairo_text_extents_t _tmp6_;
+	gdouble _tmp7_;
+	cairo_text_extents_t _tmp8_;
+	gdouble _tmp9_;
+	gint _tmp10_;
+	gchar* _tmp11_ = NULL;
+	gchar* _tmp12_;
+	AppIndicator* _tmp13_;
 	g_return_if_fail (self != NULL);
-	g_return_if_fail (icon != NULL);
-	_tmp0_ = self->priv->indicator;
-	_tmp1_ = icon;
-	app_indicator_set_icon (_tmp0_, _tmp1_);
+	_tmp0_ = cairo_image_surface_create_from_png ("/usr/local/share/update_indicator/software-update-available-empty.png");
+	icon = _tmp0_;
+	_tmp1_ = cairo_create (icon);
+	co = _tmp1_;
+	memset (&ex, 0, sizeof (cairo_text_extents_t));
+	ex.x_bearing = (gdouble) 10;
+	ex.width = (gdouble) 10;
+	ex.height = (gdouble) 10;
+	cairo_set_source_rgb (co, 0.2, 0.2, 0.2);
+	cairo_select_font_face (co, "Ubuntu", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+	cairo_set_font_size (co, (gdouble) 20);
+	_tmp2_ = count;
+	_tmp3_ = g_strdup_printf ("%i", _tmp2_);
+	_tmp4_ = _tmp3_;
+	cairo_text_extents (co, _tmp4_, &_tmp5_);
+	ex = _tmp5_;
+	_g_free0 (_tmp4_);
+	_tmp6_ = ex;
+	_tmp7_ = _tmp6_.width;
+	_tmp8_ = ex;
+	_tmp9_ = _tmp8_.height;
+	cairo_move_to (co, (24 - 1) - (_tmp7_ / 2), (24 - 1) + (_tmp9_ / 2));
+	_tmp10_ = count;
+	_tmp11_ = g_strdup_printf ("%i", _tmp10_);
+	_tmp12_ = _tmp11_;
+	cairo_show_text (co, _tmp12_);
+	_g_free0 (_tmp12_);
+	cairo_surface_write_to_png (icon, "/tmp/icon.png");
+	cairo_surface_show_page (icon);
+	cairo_surface_finish (icon);
+	_tmp13_ = self->priv->indicator;
+	app_indicator_set_icon (_tmp13_, "/tmp/icon.png");
+	_cairo_destroy0 (co);
+	_cairo_surface_destroy0 (icon);
 }
 
 
