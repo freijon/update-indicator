@@ -29,6 +29,5 @@ appindicator3-0.1
 AC_OUTPUT([
 Makefile
 src/Makefile
-src/icons/Makefile
 
 ])

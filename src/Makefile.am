@@ -1,13 +1,12 @@
-
-SUBDIRS = \
-	icons
 ## Process this file with automake to produce Makefile.in
 
 ## Created by Anjuta
 
 
-uidir = $(datadir)/update_indicator/ui
-ui_DATA = UpdateIndicator.glade
+uidir = $(pkgdatadir)
+ui_DATA = UpdateIndicator.glade \
+	software-update-available.png \
+	no-update-available.png
 
 
 AM_CPPFLAGS = \
@@ -39,5 +38,4 @@ EXTRA_DIST = $(ui_DATA)
 # Remove ui directory on uninstall
 uninstall-local:
 	-rm -r $(uidir)
-	-rm -r $(datadir)/update_indicator
 
