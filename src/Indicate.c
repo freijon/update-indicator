@@ -129,6 +129,7 @@ enum  {
 	INDICATE_DUMMY_PROPERTY
 };
 #define INDICATE_ACTIVE_ICON "/usr/local/share/update_indicator/software-update-available.png"
+#define INDICATE_ACTIVE_ICON_EMPTY "/usr/local/share/update_indicator/software-update-available-empty.png"
 #define INDICATE_PASSIVE_ICON "/usr/local/share/update_indicator/no-update-available.png"
 #define INDICATE_GLADE_FILE "/usr/local/share/update_indicator/UpdateIndicator.glade"
 Indicate* indicate_new (void);
@@ -726,8 +727,9 @@ static void indicate_set_active_icon (Indicate* self, gint count) {
 	gchar* _tmp11_ = NULL;
 	gchar* _tmp12_;
 	AppIndicator* _tmp13_;
+	AppIndicator* _tmp14_;
 	g_return_if_fail (self != NULL);
-	_tmp0_ = cairo_image_surface_create_from_png ("/usr/local/share/update_indicator/software-update-available-empty.png");
+	_tmp0_ = cairo_image_surface_create_from_png (INDICATE_ACTIVE_ICON_EMPTY);
 	icon = _tmp0_;
 	_tmp1_ = cairo_create (icon);
 	co = _tmp1_;
@@ -758,7 +760,9 @@ static void indicate_set_active_icon (Indicate* self, gint count) {
 	cairo_surface_show_page (icon);
 	cairo_surface_finish (icon);
 	_tmp13_ = self->priv->indicator;
-	app_indicator_set_icon (_tmp13_, "/tmp/icon.png");
+	app_indicator_set_icon (_tmp13_, INDICATE_ACTIVE_ICON_EMPTY);
+	_tmp14_ = self->priv->indicator;
+	app_indicator_set_icon (_tmp14_, "/tmp/icon.png");
 	_cairo_destroy0 (co);
 	_cairo_surface_destroy0 (icon);
 }

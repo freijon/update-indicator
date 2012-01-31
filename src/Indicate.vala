@@ -35,6 +35,7 @@ public class Indicate
 	private UpdateChecker checker;
 	
 	private const string ACTIVE_ICON = "/usr/local/share/update_indicator/software-update-available.png";
+	private const string ACTIVE_ICON_EMPTY = "/usr/local/share/update_indicator/software-update-available-empty.png";
 	private const string PASSIVE_ICON = "/usr/local/share/update_indicator/no-update-available.png";
 	private const string GLADE_FILE = "/usr/local/share/update_indicator/UpdateIndicator.glade";
 		
@@ -176,7 +177,7 @@ public class Indicate
 	
 	private void set_active_icon(int count)
 	{
-		var icon = new Cairo.ImageSurface.from_png("/usr/local/share/update_indicator/software-update-available-empty.png");
+		var icon = new Cairo.ImageSurface.from_png(ACTIVE_ICON_EMPTY);
 		var co = new Context(icon);
 
 		var ex = TextExtents();
@@ -194,7 +195,7 @@ public class Indicate
 		icon.write_to_png ("/tmp/icon.png");
 		icon.show_page();
 		icon.finish();
-
+		indicator.set_icon(ACTIVE_ICON_EMPTY);
 		indicator.set_icon("/tmp/icon.png");
 	}
 	

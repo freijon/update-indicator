@@ -246,7 +246,8 @@ top_srcdir = ..
 uidir = $(pkgdatadir)
 ui_DATA = UpdateIndicator.glade \
 	software-update-available.png \
-	no-update-available.png
+	no-update-available.png \
+	software-update-available-empty.png
 
 AM_CPPFLAGS = \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
