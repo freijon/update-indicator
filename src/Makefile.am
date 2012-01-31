@@ -1,3 +1,6 @@
+
+SUBDIRS = \
+	icons
 ## Process this file with automake to produce Makefile.in
 
 ## Created by Anjuta
@@ -37,3 +40,4 @@ EXTRA_DIST = $(ui_DATA)
 uninstall-local:
 	-rm -r $(uidir)
 	-rm -r $(datadir)/update_indicator
+
