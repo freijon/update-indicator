@@ -57,7 +57,9 @@ struct _UpdateCheckerClass {
 
 struct _UpdateCheckerPrivate {
 	gint interval;
-	gchar* package_list;
+	gchar** old_list;
+	gint old_list_length1;
+	gint _old_list_size_;
 	gint package_count;
 };
 
@@ -82,10 +84,12 @@ enum  {
 UpdateChecker* update_checker_new (gint update_interval);
 UpdateChecker* update_checker_construct (GType object_type, gint update_interval);
 void* update_checker_check_for_updates (UpdateChecker* self);
+static gchar** _vala_array_dup1 (gchar** self, int length);
 void update_checker_set_count (UpdateChecker* self, gint value);
+gint update_checker_get_count (UpdateChecker* self);
+static gchar** _vala_array_dup2 (gchar** self, int length);
 gint update_checker_get_update_interval (UpdateChecker* self);
 void update_checker_set_update_interval (UpdateChecker* self, gint value);
-gint update_checker_get_count (UpdateChecker* self);
 static void g_cclosure_user_marshal_VOID__BOXED_INT_INT (GClosure * closure, GValue * return_value, guint n_param_values, const GValue * param_values, gpointer invocation_hint, gpointer marshal_data);
 static void update_checker_finalize (UpdateChecker* obj);
 static void _vala_array_destroy (gpointer array, gint array_length, GDestroyNotify destroy_func);
@@ -108,15 +112,28 @@ UpdateChecker* update_checker_new (gint update_interval) {
 }
 
 
-static gboolean string_contains (const gchar* self, const gchar* needle) {
-	gboolean result = FALSE;
-	const gchar* _tmp0_;
-	gchar* _tmp1_ = NULL;
-	g_return_val_if_fail (self != NULL, FALSE);
-	g_return_val_if_fail (needle != NULL, FALSE);
-	_tmp0_ = needle;
-	_tmp1_ = strstr ((gchar*) self, (gchar*) _tmp0_);
-	result = _tmp1_ != NULL;
+static gchar** _vala_array_dup1 (gchar** self, int length) {
+	gchar** result;
+	int i;
+	result = g_new0 (gchar*, length + 1);
+	for (i = 0; i < length; i++) {
+		gchar* _tmp0_;
+		_tmp0_ = g_strdup (self[i]);
+		result[i] = _tmp0_;
+	}
+	return result;
+}
+
+
+static gchar** _vala_array_dup2 (gchar** self, int length) {
+	gchar** result;
+	int i;
+	result = g_new0 (gchar*, length + 1);
+	for (i = 0; i < length; i++) {
+		gchar* _tmp0_;
+		_tmp0_ = g_strdup (self[i]);
+		result[i] = _tmp0_;
+	}
 	return result;
 }
 
@@ -128,28 +145,40 @@ void* update_checker_check_for_updates (UpdateChecker* self) {
 	while (TRUE) {
 		gchar* _tmp0_;
 		gchar* output;
-		const gchar* _tmp3_;
-		gchar** _tmp4_;
-		gchar** _tmp5_ = NULL;
-		gchar** output_lines;
-		gint output_lines_length1;
-		gint _output_lines_size_;
-		gchar* _tmp6_;
-		gchar* packages;
-		gboolean look_for_packages;
-		gchar** _tmp7_;
-		gint _tmp7__length1;
-		const gchar* _tmp19_;
-		const gchar* _tmp20_;
-		const gchar* _tmp34_;
-		gchar* _tmp35_;
-		gint _tmp36_;
-		gint _tmp37_;
+		gchar** _tmp3_ = NULL;
+		gint _tmp3__length1 = 0;
+		gint __tmp3__size_ = 0;
+		const gchar* _tmp4_;
+		gint _tmp5_;
+		gint _tmp6_;
+		gchar** _tmp12_;
+		gint _tmp12__length1;
+		gchar** _tmp13_;
+		gint _tmp13__length1;
+		gchar** packages;
+		gint packages_length1;
+		gint _packages_size_;
+		gchar** _tmp14_;
+		gint _tmp14__length1;
+		gboolean is_same;
+		gchar** _tmp43_;
+		gint _tmp43__length1;
+		gchar** _tmp44_;
+		gint _tmp44__length1;
+		gchar** _tmp45_;
+		gint _tmp45__length1;
+		const gchar* _tmp46_;
+		gchar** _tmp56_;
+		gint _tmp56__length1;
+		gchar** _tmp57_;
+		gint _tmp57__length1;
+		gint _tmp58_;
+		gint _tmp59_;
 		_tmp0_ = g_strdup ("");
 		output = _tmp0_;
 		{
 			gchar* _tmp1_ = NULL;
-			g_spawn_command_line_sync ("apt-get upgrade -s", &_tmp1_, NULL, NULL, &_inner_error_);
+			g_spawn_command_line_sync ("aptitude search ~U -F %p", &_tmp1_, NULL, NULL, &_inner_error_);
 			_g_free0 (output);
 			output = _tmp1_;
 			if (_inner_error_ != NULL) {
@@ -174,132 +203,216 @@ void* update_checker_check_for_updates (UpdateChecker* self) {
 			g_clear_error (&_inner_error_);
 			return NULL;
 		}
-		_tmp3_ = output;
-		_tmp5_ = _tmp4_ = g_strsplit (_tmp3_, "\n", 0);
-		output_lines = _tmp5_;
-		output_lines_length1 = _vala_array_length (_tmp4_);
-		_output_lines_size_ = output_lines_length1;
-		_tmp6_ = g_strdup ("");
-		packages = _tmp6_;
-		look_for_packages = FALSE;
-		_tmp7_ = output_lines;
-		_tmp7__length1 = output_lines_length1;
+		_tmp4_ = output;
+		_tmp5_ = strlen (_tmp4_);
+		_tmp6_ = _tmp5_;
+		if (_tmp6_ > 0) {
+			const gchar* _tmp7_;
+			gchar** _tmp8_;
+			gchar** _tmp9_ = NULL;
+			_tmp7_ = output;
+			_tmp9_ = _tmp8_ = g_strsplit (_tmp7_, "\n", 0);
+			_tmp3_ = (_vala_array_free (_tmp3_, _tmp3__length1, (GDestroyNotify) g_free), NULL);
+			_tmp3_ = _tmp9_;
+			_tmp3__length1 = _vala_array_length (_tmp8_);
+			__tmp3__size_ = _tmp3__length1;
+		} else {
+			gchar* _tmp10_;
+			gchar** _tmp11_ = NULL;
+			_tmp10_ = g_strdup ("No updates");
+			_tmp11_ = g_new0 (gchar*, 1 + 1);
+			_tmp11_[0] = _tmp10_;
+			_tmp3_ = (_vala_array_free (_tmp3_, _tmp3__length1, (GDestroyNotify) g_free), NULL);
+			_tmp3_ = _tmp11_;
+			_tmp3__length1 = 1;
+			__tmp3__size_ = _tmp3__length1;
+		}
+		_tmp12_ = _tmp3_;
+		_tmp12__length1 = _tmp3__length1;
+		_tmp13_ = (_tmp12_ != NULL) ? _vala_array_dup1 (_tmp12_, _tmp12__length1) : ((gpointer) _tmp12_);
+		_tmp13__length1 = _tmp12__length1;
+		packages = _tmp13_;
+		packages_length1 = _tmp13__length1;
+		_packages_size_ = packages_length1;
+		_tmp14_ = packages;
+		_tmp14__length1 = packages_length1;
+		if (_tmp14__length1 > 0) {
+			gchar** _tmp15_;
+			gint _tmp15__length1;
+			const gchar* _tmp16_;
+			_tmp15_ = packages;
+			_tmp15__length1 = packages_length1;
+			_tmp16_ = _tmp15_[0];
+			if (g_strcmp0 (_tmp16_, "No updates") != 0) {
+				gchar** _tmp17_;
+				gint _tmp17__length1;
+				gint _tmp18_ = 0;
+				_tmp17_ = packages;
+				_tmp17__length1 = packages_length1;
+				_tmp18_ = _tmp17__length1 - 1;
+				packages = g_renew (gchar*, packages, _tmp17__length1 - 1);
+				(_tmp18_ > packages_length1) ? memset (packages + packages_length1, 0, sizeof (gchar*) * (_tmp18_ - packages_length1)) : NULL;
+				packages_length1 = _tmp18_;
+				_packages_size_ = _tmp18_;
+			}
+		}
 		{
-			gchar** line_collection = NULL;
-			gint line_collection_length1 = 0;
-			gint _line_collection_size_ = 0;
-			gint line_it = 0;
-			line_collection = _tmp7_;
-			line_collection_length1 = _tmp7__length1;
-			for (line_it = 0; line_it < _tmp7__length1; line_it = line_it + 1) {
-				gchar* _tmp8_;
-				gchar* line = NULL;
-				_tmp8_ = g_strdup (line_collection[line_it]);
-				line = _tmp8_;
-				{
-					const gchar* _tmp9_;
-					gboolean _tmp10_ = FALSE;
-					const gchar* _tmp11_;
-					gboolean _tmp12_;
-					_tmp9_ = line;
-					_tmp10_ = string_contains (_tmp9_, "newly installed");
-					if (_tmp10_) {
-						_g_free0 (line);
+			gint i;
+			i = 0;
+			{
+				gboolean _tmp19_;
+				_tmp19_ = TRUE;
+				while (TRUE) {
+					gboolean _tmp20_;
+					gint _tmp22_;
+					gchar** _tmp23_;
+					gint _tmp23__length1;
+					gchar** _tmp24_;
+					gint _tmp24__length1;
+					gint _tmp25_;
+					gchar** _tmp26_;
+					gint _tmp26__length1;
+					gint _tmp27_;
+					const gchar* _tmp28_;
+					const gchar* _tmp29_ = NULL;
+					gchar* _tmp30_;
+					gchar* _tmp31_;
+					_tmp20_ = _tmp19_;
+					if (!_tmp20_) {
+						gint _tmp21_;
+						_tmp21_ = i;
+						i = _tmp21_ + 1;
+					}
+					_tmp19_ = FALSE;
+					_tmp22_ = i;
+					_tmp23_ = packages;
+					_tmp23__length1 = packages_length1;
+					if (!(_tmp22_ < _tmp23__length1)) {
 						break;
 					}
-					_tmp11_ = line;
-					if (g_strcmp0 (_tmp11_, "The following packages will be upgraded:") == 0) {
-						look_for_packages = TRUE;
-						_g_free0 (line);
-						continue;
-					}
-					_tmp12_ = look_for_packages;
-					if (_tmp12_) {
-						const gchar* _tmp13_;
-						const gchar* _tmp14_;
-						const gchar* _tmp15_ = NULL;
-						gchar* _tmp16_;
-						gchar* _tmp17_;
-						gchar* _tmp18_;
-						_tmp13_ = packages;
-						_tmp14_ = line;
-						_tmp15_ = g_strchug (_tmp14_);
-						_tmp16_ = g_strconcat (_tmp15_, " ", NULL);
-						_tmp17_ = _tmp16_;
-						_tmp18_ = g_strconcat (_tmp13_, _tmp17_, NULL);
-						_g_free0 (packages);
-						packages = _tmp18_;
-						_g_free0 (_tmp17_);
-					}
-					_g_free0 (line);
+					_tmp24_ = packages;
+					_tmp24__length1 = packages_length1;
+					_tmp25_ = i;
+					_tmp26_ = packages;
+					_tmp26__length1 = packages_length1;
+					_tmp27_ = i;
+					_tmp28_ = _tmp26_[_tmp27_];
+					_tmp29_ = g_strchomp (_tmp28_);
+					_tmp30_ = g_strdup (_tmp29_);
+					_g_free0 (_tmp24_[_tmp25_]);
+					_tmp24_[_tmp25_] = _tmp30_;
+					_tmp31_ = _tmp24_[_tmp25_];
 				}
 			}
 		}
-		_tmp19_ = packages;
-		g_strchomp (_tmp19_);
-		_tmp20_ = packages;
-		if (g_strcmp0 (_tmp20_, "") != 0) {
-			const gchar* _tmp21_;
-			const gchar* _tmp22_;
-			_tmp21_ = packages;
-			_tmp22_ = self->priv->package_list;
-			if (g_strcmp0 (_tmp21_, _tmp22_) != 0) {
-				const gchar* _tmp23_;
-				gchar** _tmp24_;
-				gchar** _tmp25_ = NULL;
-				gchar** update_list;
-				gint update_list_length1;
-				gint _update_list_size_;
-				gchar** _tmp26_;
-				gint _tmp26__length1;
-				gchar** _tmp27_;
-				gint _tmp27__length1;
-				gchar** _tmp28_;
-				gint _tmp28__length1;
-				_tmp23_ = packages;
-				_tmp25_ = _tmp24_ = g_strsplit (_tmp23_, " ", 0);
-				update_list = _tmp25_;
-				update_list_length1 = _vala_array_length (_tmp24_);
-				_update_list_size_ = update_list_length1;
-				_tmp26_ = update_list;
-				_tmp26__length1 = update_list_length1;
-				update_checker_set_count (self, _tmp26__length1);
-				_tmp27_ = update_list;
-				_tmp27__length1 = update_list_length1;
-				_tmp28_ = update_list;
-				_tmp28__length1 = update_list_length1;
-				g_signal_emit_by_name (self, "update-event", _tmp27_, _tmp27__length1, _tmp28__length1);
-				update_list = (_vala_array_free (update_list, update_list_length1, (GDestroyNotify) g_free), NULL);
-			}
-		} else {
-			const gchar* _tmp29_;
-			const gchar* _tmp30_;
-			_tmp29_ = packages;
-			_tmp30_ = self->priv->package_list;
-			if (g_strcmp0 (_tmp29_, _tmp30_) != 0) {
-				gchar* _tmp31_;
-				gchar** _tmp32_ = NULL;
-				gchar** _tmp33_;
-				gint _tmp33__length1;
-				update_checker_set_count (self, 0);
-				_tmp31_ = g_strdup ("No updates");
-				_tmp32_ = g_new0 (gchar*, 1 + 1);
-				_tmp32_[0] = _tmp31_;
-				_tmp33_ = _tmp32_;
-				_tmp33__length1 = 1;
-				g_signal_emit_by_name (self, "update-event", _tmp33_, 1, 0);
-				_tmp33_ = (_vala_array_free (_tmp33_, _tmp33__length1, (GDestroyNotify) g_free), NULL);
+		is_same = TRUE;
+		{
+			gint i;
+			i = 0;
+			{
+				gboolean _tmp32_;
+				_tmp32_ = TRUE;
+				while (TRUE) {
+					gboolean _tmp33_;
+					gint _tmp35_;
+					gchar** _tmp36_;
+					gint _tmp36__length1;
+					gchar** _tmp37_;
+					gint _tmp37__length1;
+					gint _tmp38_;
+					const gchar* _tmp39_;
+					gchar** _tmp40_;
+					gint _tmp40__length1;
+					gint _tmp41_;
+					const gchar* _tmp42_;
+					_tmp33_ = _tmp32_;
+					if (!_tmp33_) {
+						gint _tmp34_;
+						_tmp34_ = i;
+						i = _tmp34_ + 1;
+					}
+					_tmp32_ = FALSE;
+					_tmp35_ = i;
+					_tmp36_ = packages;
+					_tmp36__length1 = packages_length1;
+					if (!(_tmp35_ < _tmp36__length1)) {
+						break;
+					}
+					_tmp37_ = packages;
+					_tmp37__length1 = packages_length1;
+					_tmp38_ = i;
+					_tmp39_ = _tmp37_[_tmp38_];
+					_tmp40_ = self->priv->old_list;
+					_tmp40__length1 = self->priv->old_list_length1;
+					_tmp41_ = i;
+					_tmp42_ = _tmp40_[_tmp41_];
+					if (g_strcmp0 (_tmp39_, _tmp42_) != 0) {
+						is_same = FALSE;
+						break;
+					}
+				}
 			}
 		}
-		_tmp34_ = packages;
-		_tmp35_ = g_strdup (_tmp34_);
-		_g_free0 (self->priv->package_list);
-		self->priv->package_list = _tmp35_;
-		_tmp36_ = update_checker_get_update_interval (self);
-		_tmp37_ = _tmp36_;
-		g_usleep ((gulong) (_tmp37_ * 1000000));
-		_g_free0 (packages);
-		output_lines = (_vala_array_free (output_lines, output_lines_length1, (GDestroyNotify) g_free), NULL);
+		_tmp43_ = packages;
+		_tmp43__length1 = packages_length1;
+		_tmp44_ = self->priv->old_list;
+		_tmp44__length1 = self->priv->old_list_length1;
+		if (_tmp43__length1 != _tmp44__length1) {
+			is_same = FALSE;
+		}
+		_tmp45_ = packages;
+		_tmp45__length1 = packages_length1;
+		_tmp46_ = _tmp45_[0];
+		if (g_strcmp0 (_tmp46_, "No updates") != 0) {
+			gboolean _tmp47_;
+			_tmp47_ = is_same;
+			if (!_tmp47_) {
+				gchar** _tmp48_;
+				gint _tmp48__length1;
+				gchar** _tmp49_;
+				gint _tmp49__length1;
+				gint _tmp50_;
+				gint _tmp51_;
+				_tmp48_ = packages;
+				_tmp48__length1 = packages_length1;
+				update_checker_set_count (self, _tmp48__length1);
+				_tmp49_ = packages;
+				_tmp49__length1 = packages_length1;
+				_tmp50_ = update_checker_get_count (self);
+				_tmp51_ = _tmp50_;
+				g_signal_emit_by_name (self, "update-event", _tmp49_, _tmp49__length1, _tmp51_);
+			}
+		} else {
+			gboolean _tmp52_;
+			_tmp52_ = is_same;
+			if (!_tmp52_) {
+				gchar* _tmp53_;
+				gchar** _tmp54_ = NULL;
+				gchar** _tmp55_;
+				gint _tmp55__length1;
+				update_checker_set_count (self, 0);
+				_tmp53_ = g_strdup ("No updates");
+				_tmp54_ = g_new0 (gchar*, 1 + 1);
+				_tmp54_[0] = _tmp53_;
+				_tmp55_ = _tmp54_;
+				_tmp55__length1 = 1;
+				g_signal_emit_by_name (self, "update-event", _tmp55_, 1, 0);
+				_tmp55_ = (_vala_array_free (_tmp55_, _tmp55__length1, (GDestroyNotify) g_free), NULL);
+			}
+		}
+		_tmp56_ = packages;
+		_tmp56__length1 = packages_length1;
+		_tmp57_ = (_tmp56_ != NULL) ? _vala_array_dup2 (_tmp56_, _tmp56__length1) : ((gpointer) _tmp56_);
+		_tmp57__length1 = _tmp56__length1;
+		self->priv->old_list = (_vala_array_free (self->priv->old_list, self->priv->old_list_length1, (GDestroyNotify) g_free), NULL);
+		self->priv->old_list = _tmp57_;
+		self->priv->old_list_length1 = _tmp57__length1;
+		self->priv->_old_list_size_ = self->priv->old_list_length1;
+		_tmp58_ = update_checker_get_update_interval (self);
+		_tmp59_ = _tmp58_;
+		g_usleep ((gulong) (_tmp59_ * 1000000));
+		packages = (_vala_array_free (packages, packages_length1, (GDestroyNotify) g_free), NULL);
+		_tmp3_ = (_vala_array_free (_tmp3_, _tmp3__length1, (GDestroyNotify) g_free), NULL);
 		_g_free0 (output);
 	}
 	return result;
@@ -482,10 +595,15 @@ static void update_checker_class_init (UpdateCheckerClass * klass) {
 
 static void update_checker_instance_init (UpdateChecker * self) {
 	gchar* _tmp0_;
+	gchar** _tmp1_ = NULL;
 	self->priv = UPDATE_CHECKER_GET_PRIVATE (self);
 	self->priv->interval = 2 * 60;
-	_tmp0_ = g_strdup ("");
-	self->priv->package_list = _tmp0_;
+	_tmp0_ = g_strdup ("No updates");
+	_tmp1_ = g_new0 (gchar*, 1 + 1);
+	_tmp1_[0] = _tmp0_;
+	self->priv->old_list = _tmp1_;
+	self->priv->old_list_length1 = 1;
+	self->priv->_old_list_size_ = self->priv->old_list_length1;
 	self->priv->package_count = 0;
 	self->ref_count = 1;
 }
@@ -494,7 +612,7 @@ static void update_checker_instance_init (UpdateChecker * self) {
 static void update_checker_finalize (UpdateChecker* obj) {
 	UpdateChecker * self;
 	self = UPDATE_CHECKER (obj);
-	_g_free0 (self->priv->package_list);
+	self->priv->old_list = (_vala_array_free (self->priv->old_list, self->priv->old_list_length1, (GDestroyNotify) g_free), NULL);
 }
 
 

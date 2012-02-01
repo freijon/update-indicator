@@ -24,7 +24,7 @@ public class UpdateChecker
 	public signal void update_event (string[] packages, int count);
 	
 	private int interval = 2 * 60;
-	private string package_list = "";
+	private string[] old_list = new string[]{"No updates"};
 	private int package_count = 0;
 	
 	public UpdateChecker (int update_interval)
@@ -39,56 +39,58 @@ public class UpdateChecker
 			string output = "";
 			try
 			{
-				Process.spawn_command_line_sync ("apt-get upgrade -s", out output);
+				Process.spawn_command_line_sync ("aptitude search ~U -F %p", out output);
 			}
 			catch (Error e)
 			{
 				stderr.printf("Failed to check for updates.\n");
 			}
-			
-			string[] output_lines = output.split("\n");
-			string packages = "";
-			bool look_for_packages = false;
-			
-			foreach (string line in output_lines)
+			string[] packages = output.length > 0 ? output.split("\n") : new string[]{"No updates"};
+
+			if (packages.length > 0)
 			{
-				if (line.contains ("newly installed"))
+				if (packages[0] != "No updates")
 				{
+					packages.resize(packages.length -1);
+				}
+			}
+
+			for (int i = 0; i < packages.length; i++)
+			{
+				packages[i] = packages[i]._chomp ();
+			}
+			
+			bool is_same = true;
+			for (int i = 0; i < packages.length; i++)
+			{
+				if (packages[i] != old_list[i])
+				{
+					is_same = false;
 					break;
 				}
-				
-				if (line == "The following packages will be upgraded:")
-				{
-					look_for_packages = true;
-					continue;
-				}
-				if (look_for_packages)
-				{
-					packages += (line._chug() + " ");
-				}
 			}
+			if (packages.length != old_list.length)
+				is_same = false;
 			
-			packages._chomp();
-			
-			if (packages != "")
+			if (packages[0] != "No updates")
 			{
-				if (packages != package_list)
+				if (!is_same)
 				{
-					string[] update_list = packages.split(" ");
-					count = update_list.length;
-					update_event(update_list, update_list.length);
+					count = packages.length;
+					update_event(packages, count);
 				}
-				
 			}
+
 			else
 			{
-				if (packages != package_list)
+				if (!is_same)
 				{
 					count = 0;
 					update_event(new string[]{"No updates"}, 0);
 				}
 			}
-			package_list = packages;
+			
+			old_list = packages;
 			
 			Thread.usleep(update_interval * 1000000);
 		}
