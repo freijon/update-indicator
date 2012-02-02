@@ -182,21 +182,22 @@ void* update_checker_check_for_updates (UpdateChecker* self) {
 			_g_free0 (output);
 			output = _tmp1_;
 			if (_inner_error_ != NULL) {
-				goto __catch16_g_error;
+				goto __catch20_g_error;
 			}
 		}
-		goto __finally16;
-		__catch16_g_error:
+		goto __finally20;
+		__catch20_g_error:
 		{
 			GError* e = NULL;
 			FILE* _tmp2_;
 			e = _inner_error_;
 			_inner_error_ = NULL;
 			_tmp2_ = stderr;
-			fprintf (_tmp2_, "Failed to check for updates.\n");
+			fprintf (_tmp2_, "Failed to check for updates.\n" \
+"--> is \"aptitude\" correctly installed on your system?\n");
 			_g_error_free0 (e);
 		}
-		__finally16:
+		__finally20:
 		if (_inner_error_ != NULL) {
 			_g_free0 (output);
 			g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);

@@ -26,18 +26,21 @@ public class GConfInterface
 	
 	private const string GCONF_APP_PATH = "/apps/indicator-updatemanager";
 	private const string CHECK_INTERVAL = GCONF_APP_PATH + "/check_interval";
-//	private const string UPDATE_TOOL = GCONF_APP_PATH + "/tool";
+	private const string UPDATE_TOOL = GCONF_APP_PATH + "/tool";
 //	private const string AUTOSTART = GCONF_APP_PATH + "/autostart";
 	private const string NOTIFY = GCONF_APP_PATH + "/notification";
 	private const string MANAGER_POPUP = "/apps/update-notifier/auto_launch";
 	private const string SHOW_PASSIVE_ICON = GCONF_APP_PATH + "/show_passive_icon";
+	private const string SHOW_NUMBER_OF_UPDATES = GCONF_APP_PATH + "/show_number";
 	
 	public enum Key
 	{
 		CHECK_INTERVAL,
+		UPDATE_TOOL,
 		NOTIFY,
 		MANAGER_POPUP,
-		SHOW_PASSIVE_ICON
+		SHOW_PASSIVE_ICON,
+		SHOW_NUMBER_OF_UPDATES
 	}
 	
 	public static bool get_bool (Key key)
@@ -64,6 +67,12 @@ public class GConfInterface
 				} catch (GLib.Error e) {
 				}
 				break;
+			case Key.SHOW_NUMBER_OF_UPDATES:
+				try {
+					output = client.get_bool (SHOW_NUMBER_OF_UPDATES);
+				} catch (GLib.Error e) {
+				}
+				break;
 		}
 		return output;
 	}
@@ -78,6 +87,13 @@ public class GConfInterface
 				output = 2 * 60;
 				try {
 					output = client.get_int (CHECK_INTERVAL);
+				} catch (GLib.Error e) {
+				}
+				break;
+			case Key.UPDATE_TOOL:
+				output = 0;
+				try {
+					output = client.get_int (UPDATE_TOOL);
 				} catch (GLib.Error e) {
 				}
 				break;
@@ -111,6 +127,13 @@ public class GConfInterface
 					stderr.printf("Error: Failed to save setting \"SHOW_PASSIVE_ICON\": %s\n", e.message);
 				}
 				break;
+			case Key.SHOW_NUMBER_OF_UPDATES:
+				try {
+					client.set_bool (SHOW_NUMBER_OF_UPDATES, value);
+				} catch (GLib.Error e) {
+					stderr.printf("Error: Failed to save setting \"SHOW_NUMBER_OF_UPDATES\": %s\n", e.message);
+				}
+				break;
 		}
 	}
 	
@@ -124,6 +147,13 @@ public class GConfInterface
 					client.set_int (CHECK_INTERVAL, value);
 				} catch (GLib.Error e) {
 					stderr.printf("Error: Failed to save setting \"CHECK_INTERVAL\": %s\n", e.message);
+				}
+				break;
+			case Key.UPDATE_TOOL:
+				try {
+					client.set_int (UPDATE_TOOL, value);
+				} catch (GLib.Error e) {
+					stderr.printf("Error: Failed to save setting \"UPDATE_TOOL\": %s\n", e.message);
 				}
 				break;
 		}

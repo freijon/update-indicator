@@ -68,13 +68,17 @@ struct _PreferencesDialogPrivate {
 	GtkSwitch* checkbutton_autopopup;
 	GtkSwitch* checkbutton_notify;
 	GtkSwitch* checkbutton_passive_icon;
+	GtkSwitch* checkbutton_show_number;
+	GtkComboBoxText* comboboxtext_upgrade_tool;
 };
 
 typedef enum  {
 	GCONF_INTERFACE_KEY_CHECK_INTERVAL,
+	GCONF_INTERFACE_KEY_UPDATE_TOOL,
 	GCONF_INTERFACE_KEY_NOTIFY,
 	GCONF_INTERFACE_KEY_MANAGER_POPUP,
-	GCONF_INTERFACE_KEY_SHOW_PASSIVE_ICON
+	GCONF_INTERFACE_KEY_SHOW_PASSIVE_ICON,
+	GCONF_INTERFACE_KEY_SHOW_NUMBER_OF_UPDATES
 } GConfInterfaceKey;
 
 struct _ParamSpecPreferencesDialog {
@@ -138,27 +142,36 @@ PreferencesDialog* preferences_dialog_construct (GType object_type) {
 		GtkBuilder* _tmp15_;
 		GObject* _tmp16_ = NULL;
 		GtkGrid* _tmp17_;
-		GtkGrid* grid;
-		GtkSwitch* _tmp18_;
-		GtkSwitch* _tmp19_;
-		GtkSwitch* _tmp20_;
-		GtkSwitch* _tmp21_;
-		GtkSwitch* _tmp22_;
-		GtkSwitch* _tmp23_;
-		GtkGrid* _tmp24_;
+		GtkGrid* grid_indicator;
+		GtkBuilder* _tmp18_;
+		GObject* _tmp19_ = NULL;
+		GtkGrid* _tmp20_;
+		GtkGrid* grid_notification;
+		GtkBuilder* _tmp21_;
+		GObject* _tmp22_ = NULL;
+		GtkComboBoxText* _tmp23_;
+		GtkSwitch* _tmp24_;
 		GtkSwitch* _tmp25_;
-		GtkGrid* _tmp26_;
+		GtkSwitch* _tmp26_;
 		GtkSwitch* _tmp27_;
-		GtkGrid* _tmp28_;
+		GtkSwitch* _tmp28_;
 		GtkSwitch* _tmp29_;
-		GtkDialog* _tmp30_;
+		GtkSwitch* _tmp30_;
+		GtkSwitch* _tmp31_;
+		GtkGrid* _tmp32_;
+		GtkSwitch* _tmp33_;
+		GtkGrid* _tmp34_;
+		GtkSwitch* _tmp35_;
+		GtkGrid* _tmp36_;
+		GtkSwitch* _tmp37_;
+		GtkDialog* _tmp38_;
 		_tmp0_ = gtk_builder_new ();
 		_g_object_unref0 (self->priv->builder);
 		self->priv->builder = _tmp0_;
 		_tmp1_ = self->priv->builder;
 		gtk_builder_add_from_file (_tmp1_, PREFERENCES_DIALOG_UI_FILE, &_inner_error_);
 		if (_inner_error_ != NULL) {
-			goto __catch14_g_error;
+			goto __catch18_g_error;
 		}
 		_tmp2_ = self->priv->builder;
 		gtk_builder_connect_signals (_tmp2_, self);
@@ -185,48 +198,62 @@ PreferencesDialog* preferences_dialog_construct (GType object_type) {
 		_tmp15_ = self->priv->builder;
 		_tmp16_ = gtk_builder_get_object (_tmp15_, "grid1");
 		_tmp17_ = _g_object_ref0 (GTK_IS_GRID (_tmp16_) ? ((GtkGrid*) _tmp16_) : NULL);
-		grid = _tmp17_;
-		_tmp18_ = (GtkSwitch*) gtk_switch_new ();
-		_tmp19_ = g_object_ref_sink (_tmp18_);
+		grid_indicator = _tmp17_;
+		_tmp18_ = self->priv->builder;
+		_tmp19_ = gtk_builder_get_object (_tmp18_, "grid2");
+		_tmp20_ = _g_object_ref0 (GTK_IS_GRID (_tmp19_) ? ((GtkGrid*) _tmp19_) : NULL);
+		grid_notification = _tmp20_;
+		_tmp21_ = self->priv->builder;
+		_tmp22_ = gtk_builder_get_object (_tmp21_, "comboboxtext_upgrade_tool");
+		_tmp23_ = _g_object_ref0 (GTK_IS_COMBO_BOX_TEXT (_tmp22_) ? ((GtkComboBoxText*) _tmp22_) : NULL);
+		_g_object_unref0 (self->priv->comboboxtext_upgrade_tool);
+		self->priv->comboboxtext_upgrade_tool = _tmp23_;
+		_tmp24_ = (GtkSwitch*) gtk_switch_new ();
+		_tmp25_ = g_object_ref_sink (_tmp24_);
 		_g_object_unref0 (self->priv->checkbutton_autopopup);
-		self->priv->checkbutton_autopopup = _tmp19_;
-		_tmp20_ = (GtkSwitch*) gtk_switch_new ();
-		_tmp21_ = g_object_ref_sink (_tmp20_);
+		self->priv->checkbutton_autopopup = _tmp25_;
+		_tmp26_ = (GtkSwitch*) gtk_switch_new ();
+		_tmp27_ = g_object_ref_sink (_tmp26_);
 		_g_object_unref0 (self->priv->checkbutton_notify);
-		self->priv->checkbutton_notify = _tmp21_;
-		_tmp22_ = (GtkSwitch*) gtk_switch_new ();
-		_tmp23_ = g_object_ref_sink (_tmp22_);
+		self->priv->checkbutton_notify = _tmp27_;
+		_tmp28_ = (GtkSwitch*) gtk_switch_new ();
+		_tmp29_ = g_object_ref_sink (_tmp28_);
 		_g_object_unref0 (self->priv->checkbutton_passive_icon);
-		self->priv->checkbutton_passive_icon = _tmp23_;
-		_tmp24_ = grid;
-		_tmp25_ = self->priv->checkbutton_autopopup;
-		gtk_grid_attach (_tmp24_, (GtkWidget*) _tmp25_, 1, 0, 1, 1);
-		_tmp26_ = grid;
-		_tmp27_ = self->priv->checkbutton_notify;
-		gtk_grid_attach (_tmp26_, (GtkWidget*) _tmp27_, 1, 1, 1, 1);
-		_tmp28_ = grid;
-		_tmp29_ = self->priv->checkbutton_passive_icon;
-		gtk_grid_attach (_tmp28_, (GtkWidget*) _tmp29_, 1, 2, 1, 1);
-		_tmp30_ = self->priv->dialog;
-		gtk_widget_show_all ((GtkWidget*) _tmp30_);
-		_g_object_unref0 (grid);
+		self->priv->checkbutton_passive_icon = _tmp29_;
+		_tmp30_ = (GtkSwitch*) gtk_switch_new ();
+		_tmp31_ = g_object_ref_sink (_tmp30_);
+		_g_object_unref0 (self->priv->checkbutton_show_number);
+		self->priv->checkbutton_show_number = _tmp31_;
+		_tmp32_ = grid_notification;
+		_tmp33_ = self->priv->checkbutton_notify;
+		gtk_grid_attach (_tmp32_, (GtkWidget*) _tmp33_, 1, 0, 1, 1);
+		_tmp34_ = grid_indicator;
+		_tmp35_ = self->priv->checkbutton_passive_icon;
+		gtk_grid_attach (_tmp34_, (GtkWidget*) _tmp35_, 1, 0, 1, 1);
+		_tmp36_ = grid_indicator;
+		_tmp37_ = self->priv->checkbutton_show_number;
+		gtk_grid_attach (_tmp36_, (GtkWidget*) _tmp37_, 1, 1, 1, 1);
+		_tmp38_ = self->priv->dialog;
+		gtk_widget_show_all ((GtkWidget*) _tmp38_);
+		_g_object_unref0 (grid_notification);
+		_g_object_unref0 (grid_indicator);
 	}
-	goto __finally14;
-	__catch14_g_error:
+	goto __finally18;
+	__catch18_g_error:
 	{
 		GError* e = NULL;
-		FILE* _tmp31_;
-		GError* _tmp32_;
-		const gchar* _tmp33_;
+		FILE* _tmp39_;
+		GError* _tmp40_;
+		const gchar* _tmp41_;
 		e = _inner_error_;
 		_inner_error_ = NULL;
-		_tmp31_ = stderr;
-		_tmp32_ = e;
-		_tmp33_ = _tmp32_->message;
-		fprintf (_tmp31_, "Could not load UI: %s\n", _tmp33_);
+		_tmp39_ = stderr;
+		_tmp40_ = e;
+		_tmp41_ = _tmp40_->message;
+		fprintf (_tmp39_, "Could not load UI: %s\n", _tmp41_);
 		_g_error_free0 (e);
 	}
-	__finally14:
+	__finally18:
 	if (_inner_error_ != NULL) {
 		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
 		g_clear_error (&_inner_error_);
@@ -253,8 +280,8 @@ void preferences_dialog_show (PreferencesDialog* self) {
 		_tmp1_ = self->priv->dialog;
 		gtk_widget_hide ((GtkWidget*) _tmp1_);
 	}
-	goto __finally15;
-	__catch15_g_error:
+	goto __finally19;
+	__catch19_g_error:
 	{
 		GError* e = NULL;
 		FILE* _tmp2_;
@@ -268,7 +295,7 @@ void preferences_dialog_show (PreferencesDialog* self) {
 		fprintf (_tmp2_, "Could not show UI: %s\n", _tmp4_);
 		_g_error_free0 (e);
 	}
-	__finally15:
+	__finally19:
 	if (_inner_error_ != NULL) {
 		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
 		g_clear_error (&_inner_error_);
@@ -285,6 +312,8 @@ static void preferences_dialog_update_from_gconf (PreferencesDialog* self) {
 	gboolean _tmp12_ = FALSE;
 	GtkSwitch* _tmp13_;
 	gboolean _tmp14_ = FALSE;
+	GtkComboBoxText* _tmp15_;
+	gint _tmp16_ = 0;
 	g_return_if_fail (self != NULL);
 	_tmp0_ = gconf_interface_get_int (GCONF_INTERFACE_KEY_CHECK_INTERVAL);
 	switch (_tmp0_) {
@@ -347,15 +376,18 @@ static void preferences_dialog_update_from_gconf (PreferencesDialog* self) {
 		default:
 		break;
 	}
-	_tmp9_ = self->priv->checkbutton_autopopup;
-	_tmp10_ = gconf_interface_get_bool (GCONF_INTERFACE_KEY_MANAGER_POPUP);
-	gtk_switch_set_active (_tmp9_, !_tmp10_);
-	_tmp11_ = self->priv->checkbutton_notify;
-	_tmp12_ = gconf_interface_get_bool (GCONF_INTERFACE_KEY_NOTIFY);
+	_tmp9_ = self->priv->checkbutton_notify;
+	_tmp10_ = gconf_interface_get_bool (GCONF_INTERFACE_KEY_NOTIFY);
+	gtk_switch_set_active (_tmp9_, _tmp10_);
+	_tmp11_ = self->priv->checkbutton_passive_icon;
+	_tmp12_ = gconf_interface_get_bool (GCONF_INTERFACE_KEY_SHOW_PASSIVE_ICON);
 	gtk_switch_set_active (_tmp11_, _tmp12_);
-	_tmp13_ = self->priv->checkbutton_passive_icon;
-	_tmp14_ = gconf_interface_get_bool (GCONF_INTERFACE_KEY_SHOW_PASSIVE_ICON);
+	_tmp13_ = self->priv->checkbutton_show_number;
+	_tmp14_ = gconf_interface_get_bool (GCONF_INTERFACE_KEY_SHOW_NUMBER_OF_UPDATES);
 	gtk_switch_set_active (_tmp13_, _tmp14_);
+	_tmp15_ = self->priv->comboboxtext_upgrade_tool;
+	_tmp16_ = gconf_interface_get_int (GCONF_INTERFACE_KEY_UPDATE_TOOL);
+	gtk_combo_box_set_active ((GtkComboBox*) _tmp15_, _tmp16_);
 }
 
 
@@ -473,6 +505,9 @@ void preferences_dialog_on_ok_clicked (GtkButton* sender, PreferencesDialog* sel
 	GtkSwitch* _tmp9_;
 	gboolean _tmp10_;
 	gboolean _tmp11_;
+	GtkComboBoxText* _tmp12_;
+	gint _tmp13_;
+	gint _tmp14_;
 	g_return_if_fail (self != NULL);
 	g_return_if_fail (sender != NULL);
 	_tmp0_ = self->priv->adjustment;
@@ -522,18 +557,22 @@ void preferences_dialog_on_ok_clicked (GtkButton* sender, PreferencesDialog* sel
 		default:
 		break;
 	}
-	_tmp3_ = self->priv->checkbutton_autopopup;
+	_tmp3_ = self->priv->checkbutton_notify;
 	_tmp4_ = gtk_switch_get_active (_tmp3_);
 	_tmp5_ = _tmp4_;
-	gconf_interface_set_bool (GCONF_INTERFACE_KEY_MANAGER_POPUP, !_tmp5_);
-	_tmp6_ = self->priv->checkbutton_notify;
+	gconf_interface_set_bool (GCONF_INTERFACE_KEY_NOTIFY, _tmp5_);
+	_tmp6_ = self->priv->checkbutton_passive_icon;
 	_tmp7_ = gtk_switch_get_active (_tmp6_);
 	_tmp8_ = _tmp7_;
-	gconf_interface_set_bool (GCONF_INTERFACE_KEY_NOTIFY, _tmp8_);
-	_tmp9_ = self->priv->checkbutton_passive_icon;
+	gconf_interface_set_bool (GCONF_INTERFACE_KEY_SHOW_PASSIVE_ICON, _tmp8_);
+	_tmp9_ = self->priv->checkbutton_show_number;
 	_tmp10_ = gtk_switch_get_active (_tmp9_);
 	_tmp11_ = _tmp10_;
-	gconf_interface_set_bool (GCONF_INTERFACE_KEY_SHOW_PASSIVE_ICON, _tmp11_);
+	gconf_interface_set_bool (GCONF_INTERFACE_KEY_SHOW_NUMBER_OF_UPDATES, _tmp11_);
+	_tmp12_ = self->priv->comboboxtext_upgrade_tool;
+	_tmp13_ = gtk_combo_box_get_active ((GtkComboBox*) _tmp12_);
+	_tmp14_ = _tmp13_;
+	gconf_interface_set_int (GCONF_INTERFACE_KEY_UPDATE_TOOL, _tmp14_);
 	g_signal_emit_by_name (self, "preferences-update");
 }
 
@@ -672,6 +711,8 @@ static void preferences_dialog_finalize (PreferencesDialog* obj) {
 	_g_object_unref0 (self->priv->checkbutton_autopopup);
 	_g_object_unref0 (self->priv->checkbutton_notify);
 	_g_object_unref0 (self->priv->checkbutton_passive_icon);
+	_g_object_unref0 (self->priv->checkbutton_show_number);
+	_g_object_unref0 (self->priv->comboboxtext_upgrade_tool);
 }
 
 

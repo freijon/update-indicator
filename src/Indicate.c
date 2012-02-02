@@ -98,9 +98,11 @@ struct _IndicatePrivate {
 
 typedef enum  {
 	GCONF_INTERFACE_KEY_CHECK_INTERVAL,
+	GCONF_INTERFACE_KEY_UPDATE_TOOL,
 	GCONF_INTERFACE_KEY_NOTIFY,
 	GCONF_INTERFACE_KEY_MANAGER_POPUP,
-	GCONF_INTERFACE_KEY_SHOW_PASSIVE_ICON
+	GCONF_INTERFACE_KEY_SHOW_PASSIVE_ICON,
+	GCONF_INTERFACE_KEY_SHOW_NUMBER_OF_UPDATES
 } GConfInterfaceKey;
 
 struct _ParamSpecIndicate {
@@ -710,61 +712,89 @@ static void indicate_on_update (Indicate* self, UpdateChecker* sender, gchar** p
 
 
 static void indicate_set_active_icon (Indicate* self, gint count) {
-	cairo_surface_t* _tmp0_;
-	cairo_surface_t* icon;
-	cairo_t* _tmp1_;
-	cairo_t* co;
-	cairo_text_extents_t ex = {0};
-	gint _tmp2_;
-	gchar* _tmp3_ = NULL;
-	gchar* _tmp4_;
-	cairo_text_extents_t _tmp5_ = {0};
-	cairo_text_extents_t _tmp6_;
-	gdouble _tmp7_;
-	cairo_text_extents_t _tmp8_;
-	gdouble _tmp9_;
-	gint _tmp10_;
-	gchar* _tmp11_ = NULL;
-	gchar* _tmp12_;
-	AppIndicator* _tmp13_;
-	AppIndicator* _tmp14_;
+	gboolean _tmp0_ = FALSE;
 	g_return_if_fail (self != NULL);
-	_tmp0_ = cairo_image_surface_create_from_png (INDICATE_ACTIVE_ICON_EMPTY);
-	icon = _tmp0_;
-	_tmp1_ = cairo_create (icon);
-	co = _tmp1_;
-	memset (&ex, 0, sizeof (cairo_text_extents_t));
-	ex.x_bearing = (gdouble) 10;
-	ex.width = (gdouble) 10;
-	ex.height = (gdouble) 10;
-	cairo_set_source_rgb (co, 0.2, 0.2, 0.2);
-	cairo_select_font_face (co, "Ubuntu", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-	cairo_set_font_size (co, (gdouble) 20);
-	_tmp2_ = count;
-	_tmp3_ = g_strdup_printf ("%i", _tmp2_);
-	_tmp4_ = _tmp3_;
-	cairo_text_extents (co, _tmp4_, &_tmp5_);
-	ex = _tmp5_;
-	_g_free0 (_tmp4_);
-	_tmp6_ = ex;
-	_tmp7_ = _tmp6_.width;
-	_tmp8_ = ex;
-	_tmp9_ = _tmp8_.height;
-	cairo_move_to (co, (24 - 1) - (_tmp7_ / 2), (24 - 1) + (_tmp9_ / 2));
-	_tmp10_ = count;
-	_tmp11_ = g_strdup_printf ("%i", _tmp10_);
-	_tmp12_ = _tmp11_;
-	cairo_show_text (co, _tmp12_);
-	_g_free0 (_tmp12_);
-	cairo_surface_write_to_png (icon, "/tmp/icon.png");
-	cairo_surface_show_page (icon);
-	cairo_surface_finish (icon);
-	_tmp13_ = self->priv->indicator;
-	app_indicator_set_icon (_tmp13_, INDICATE_ACTIVE_ICON_EMPTY);
-	_tmp14_ = self->priv->indicator;
-	app_indicator_set_icon (_tmp14_, "/tmp/icon.png");
-	_cairo_destroy0 (co);
-	_cairo_surface_destroy0 (icon);
+	_tmp0_ = gconf_interface_get_bool (GCONF_INTERFACE_KEY_SHOW_NUMBER_OF_UPDATES);
+	if (_tmp0_) {
+		cairo_surface_t* _tmp1_;
+		cairo_surface_t* icon;
+		cairo_surface_t* _tmp2_;
+		cairo_t* _tmp3_;
+		cairo_t* co;
+		cairo_text_extents_t ex = {0};
+		cairo_t* _tmp4_;
+		cairo_t* _tmp5_;
+		cairo_t* _tmp6_;
+		cairo_t* _tmp7_;
+		gint _tmp8_;
+		gchar* _tmp9_ = NULL;
+		gchar* _tmp10_;
+		cairo_text_extents_t _tmp11_ = {0};
+		cairo_t* _tmp12_;
+		cairo_text_extents_t _tmp13_;
+		gdouble _tmp14_;
+		cairo_text_extents_t _tmp15_;
+		gdouble _tmp16_;
+		cairo_t* _tmp17_;
+		gint _tmp18_;
+		gchar* _tmp19_ = NULL;
+		gchar* _tmp20_;
+		cairo_surface_t* _tmp21_;
+		cairo_surface_t* _tmp22_;
+		cairo_surface_t* _tmp23_;
+		AppIndicator* _tmp24_;
+		AppIndicator* _tmp25_;
+		_tmp1_ = cairo_image_surface_create_from_png (INDICATE_ACTIVE_ICON_EMPTY);
+		icon = _tmp1_;
+		_tmp2_ = icon;
+		_tmp3_ = cairo_create (_tmp2_);
+		co = _tmp3_;
+		memset (&ex, 0, sizeof (cairo_text_extents_t));
+		ex.x_bearing = (gdouble) 10;
+		ex.width = (gdouble) 10;
+		ex.height = (gdouble) 10;
+		_tmp4_ = co;
+		cairo_set_source_rgb (_tmp4_, 0.2, 0.2, 0.2);
+		_tmp5_ = co;
+		cairo_select_font_face (_tmp5_, "Ubuntu", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+		_tmp6_ = co;
+		cairo_set_font_size (_tmp6_, (gdouble) 20);
+		_tmp7_ = co;
+		_tmp8_ = count;
+		_tmp9_ = g_strdup_printf ("%i", _tmp8_);
+		_tmp10_ = _tmp9_;
+		cairo_text_extents (_tmp7_, _tmp10_, &_tmp11_);
+		ex = _tmp11_;
+		_g_free0 (_tmp10_);
+		_tmp12_ = co;
+		_tmp13_ = ex;
+		_tmp14_ = _tmp13_.width;
+		_tmp15_ = ex;
+		_tmp16_ = _tmp15_.height;
+		cairo_move_to (_tmp12_, (24 - 1) - (_tmp14_ / 2), (24 - 1) + (_tmp16_ / 2));
+		_tmp17_ = co;
+		_tmp18_ = count;
+		_tmp19_ = g_strdup_printf ("%i", _tmp18_);
+		_tmp20_ = _tmp19_;
+		cairo_show_text (_tmp17_, _tmp20_);
+		_g_free0 (_tmp20_);
+		_tmp21_ = icon;
+		cairo_surface_write_to_png (_tmp21_, "/tmp/icon.png");
+		_tmp22_ = icon;
+		cairo_surface_show_page (_tmp22_);
+		_tmp23_ = icon;
+		cairo_surface_finish (_tmp23_);
+		_tmp24_ = self->priv->indicator;
+		app_indicator_set_icon (_tmp24_, INDICATE_ACTIVE_ICON_EMPTY);
+		_tmp25_ = self->priv->indicator;
+		app_indicator_set_icon (_tmp25_, "/tmp/icon.png");
+		_cairo_destroy0 (co);
+		_cairo_surface_destroy0 (icon);
+	} else {
+		AppIndicator* _tmp26_;
+		_tmp26_ = self->priv->indicator;
+		app_indicator_set_icon (_tmp26_, INDICATE_ACTIVE_ICON);
+	}
 }
 
 
@@ -773,7 +803,17 @@ static void indicate_on_execute_clicked (Indicate* self, GtkWidget* sender) {
 	g_return_if_fail (self != NULL);
 	g_return_if_fail (sender != NULL);
 	{
-		g_spawn_command_line_async ("update-manager", &_inner_error_);
+		const gchar* _tmp0_ = NULL;
+		gint _tmp1_ = 0;
+		const gchar* _tmp2_;
+		_tmp1_ = gconf_interface_get_int (GCONF_INTERFACE_KEY_UPDATE_TOOL);
+		if (_tmp1_ == 0) {
+			_tmp0_ = "update-manager";
+		} else {
+			_tmp0_ = "gksu \"apt-get upgrade -y\"";
+		}
+		_tmp2_ = _tmp0_;
+		g_spawn_command_line_async (_tmp2_, &_inner_error_);
 		if (_inner_error_ != NULL) {
 			goto __catch3_g_error;
 		}
@@ -782,11 +822,11 @@ static void indicate_on_execute_clicked (Indicate* self, GtkWidget* sender) {
 	__catch3_g_error:
 	{
 		GError* e = NULL;
-		FILE* _tmp0_;
+		FILE* _tmp3_;
 		e = _inner_error_;
 		_inner_error_ = NULL;
-		_tmp0_ = stderr;
-		fprintf (_tmp0_, "Failed to start \"update-manager\"\n");
+		_tmp3_ = stderr;
+		fprintf (_tmp3_, "Failed to start \"update-manager\"\n");
 		_g_error_free0 (e);
 	}
 	__finally3:
@@ -872,6 +912,14 @@ void indicate_on_preferences_update (Indicate* self, PreferencesDialog* sender) 
 			_tmp7_ = self->priv->indicator;
 			app_indicator_set_status (_tmp7_, APP_INDICATOR_STATUS_PASSIVE);
 		}
+	} else {
+		UpdateChecker* _tmp8_;
+		gint _tmp9_;
+		gint _tmp10_;
+		_tmp8_ = self->priv->checker;
+		_tmp9_ = update_checker_get_count (_tmp8_);
+		_tmp10_ = _tmp9_;
+		indicate_set_active_icon (self, _tmp10_);
 	}
 }
 

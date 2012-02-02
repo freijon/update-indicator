@@ -33,6 +33,8 @@ public class PreferencesDialog
 	private Gtk.Switch checkbutton_autopopup;
 	private Gtk.Switch checkbutton_notify;
 	private Gtk.Switch checkbutton_passive_icon;
+	private Gtk.Switch checkbutton_show_number;
+	private Gtk.ComboBoxText comboboxtext_upgrade_tool;
 	
 	public signal void preferences_update();
 	
@@ -48,14 +50,19 @@ public class PreferencesDialog
 			adjustment = builder.get_object ("interval_adjustment") as Gtk.Adjustment;
 			interval_label = builder.get_object ("interval_label") as Gtk.Label;
 			interval_label = builder.get_object ("interval_label") as Gtk.Label;
-			var grid = builder.get_object ("grid1") as Gtk.Grid;
+			var grid_indicator = builder.get_object ("grid1") as Gtk.Grid;
+			var grid_notification = builder.get_object ("grid2") as Gtk.Grid;
+			comboboxtext_upgrade_tool = builder.get_object ("comboboxtext_upgrade_tool") as Gtk.ComboBoxText;
+			
 			checkbutton_autopopup = new Gtk.Switch();
 			checkbutton_notify = new Gtk.Switch();
 			checkbutton_passive_icon = new Gtk.Switch();
+			checkbutton_show_number = new Gtk.Switch();
 
-			grid.attach (checkbutton_autopopup, 1, 0, 1, 1);
-			grid.attach (checkbutton_notify, 1, 1, 1, 1);
-			grid.attach (checkbutton_passive_icon, 1, 2, 1, 1);
+			//grid_general.attach (checkbutton_autopopup, 1, 0, 1, 1);
+			grid_notification.attach (checkbutton_notify, 1, 0, 1, 1);
+			grid_indicator.attach (checkbutton_passive_icon, 1, 0, 1, 1);
+			grid_indicator.attach (checkbutton_show_number, 1, 1, 1, 1);
 
 			dialog.show_all();
 		}
@@ -109,9 +116,11 @@ public class PreferencesDialog
 			adjustment.value = 7;
 			break;
 		}
-		checkbutton_autopopup.active = !GConfInterface.get_bool (GConfInterface.Key.MANAGER_POPUP);
+		//checkbutton_autopopup.active = !GConfInterface.get_bool (GConfInterface.Key.MANAGER_POPUP);
 		checkbutton_notify.active = GConfInterface.get_bool (GConfInterface.Key.NOTIFY);
 		checkbutton_passive_icon.active = GConfInterface.get_bool (GConfInterface.Key.SHOW_PASSIVE_ICON);
+		checkbutton_show_number.active = GConfInterface.get_bool (GConfInterface.Key.SHOW_NUMBER_OF_UPDATES);
+		comboboxtext_upgrade_tool.active = GConfInterface.get_int (GConfInterface.Key.UPDATE_TOOL);
 	}
 	
 	[CCode (instance_pos = -1)]
@@ -169,9 +178,11 @@ public class PreferencesDialog
 		
 //		client.set_bool (UPDATE_TOOL, combobox_tool.active);
 //		client.set_bool (AUTOSTART, checkbutton_autostart.active);
-		GConfInterface.set_bool (GConfInterface.Key.MANAGER_POPUP, !checkbutton_autopopup.active);
+//		GConfInterface.set_bool (GConfInterface.Key.MANAGER_POPUP, !checkbutton_autopopup.active);
 		GConfInterface.set_bool (GConfInterface.Key.NOTIFY, checkbutton_notify.active);
 		GConfInterface.set_bool (GConfInterface.Key.SHOW_PASSIVE_ICON, checkbutton_passive_icon.active);
+		GConfInterface.set_bool (GConfInterface.Key.SHOW_NUMBER_OF_UPDATES, checkbutton_show_number.active);
+		GConfInterface.set_int (GConfInterface.Key.UPDATE_TOOL, comboboxtext_upgrade_tool.active);
 		
 		preferences_update();
 	}

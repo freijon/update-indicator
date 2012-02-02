@@ -43,7 +43,7 @@ public class UpdateChecker
 			}
 			catch (Error e)
 			{
-				stderr.printf("Failed to check for updates.\n");
+				stderr.printf("Failed to check for updates.\n--> is \"aptitude\" correctly installed on your system?\n");
 			}
 			string[] packages = output.length > 0 ? output.split("\n") : new string[]{"No updates"};
 

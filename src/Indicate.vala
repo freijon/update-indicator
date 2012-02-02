@@ -177,33 +177,40 @@ public class Indicate
 	
 	private void set_active_icon(int count)
 	{
-		var icon = new Cairo.ImageSurface.from_png(ACTIVE_ICON_EMPTY);
-		var co = new Context(icon);
+		if (GConfInterface.get_bool (GConfInterface.Key.SHOW_NUMBER_OF_UPDATES))
+		{
+			var icon = new Cairo.ImageSurface.from_png(ACTIVE_ICON_EMPTY);
+			var co = new Context(icon);
 
-		var ex = TextExtents();
-		ex.x_bearing = 10;
-		ex.width = 10;
-		ex.height = 10;
+			var ex = TextExtents();
+			ex.x_bearing = 10;
+			ex.width = 10;
+			ex.height = 10;
 
-		co.set_source_rgb(0.2, 0.2, 0.2);
-		co.select_font_face ("Ubuntu", Cairo.FontSlant.NORMAL, Cairo.FontWeight.NORMAL);
-		co.set_font_size(20);
-		co.text_extents(@"$(count)", out ex);
-		co.move_to(24 - 1 - ex.width / 2, 24 -1 + ex.height / 2 );
-		co.show_text(@"$(count)");
+			co.set_source_rgb(0.2, 0.2, 0.2);
+			co.select_font_face ("Ubuntu", Cairo.FontSlant.NORMAL, Cairo.FontWeight.NORMAL);
+			co.set_font_size(20);
+			co.text_extents(@"$(count)", out ex);
+			co.move_to(24 - 1 - ex.width / 2, 24 -1 + ex.height / 2 );
+			co.show_text(@"$(count)");
 
-		icon.write_to_png ("/tmp/icon.png");
-		icon.show_page();
-		icon.finish();
-		indicator.set_icon(ACTIVE_ICON_EMPTY);
-		indicator.set_icon("/tmp/icon.png");
+			icon.write_to_png ("/tmp/icon.png");
+			icon.show_page();
+			icon.finish();
+			indicator.set_icon(ACTIVE_ICON_EMPTY);
+			indicator.set_icon("/tmp/icon.png");
+		}
+		else
+		{
+			indicator.set_icon(ACTIVE_ICON);
+		}
 	}
 	
 	private void on_execute_clicked (Gtk.Widget sender)
 	{
 		try 
 		{
-			Process.spawn_command_line_async ("update-manager");
+			Process.spawn_command_line_async (GConfInterface.get_int(GConfInterface.Key.UPDATE_TOOL) == 0 ? "update-manager" : "gksu \"apt-get upgrade -y\"");
 		}
 		catch (GLib.Error e)
 		{
@@ -243,6 +250,10 @@ public class Indicate
 			{
 				indicator.set_status (AppIndicator.IndicatorStatus.PASSIVE);
 			}
+		}
+		else
+		{
+			set_active_icon(checker.count);
 		}
 	}
 	
