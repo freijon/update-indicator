@@ -49,7 +49,6 @@ public class PreferencesDialog
 			dialog = builder.get_object ("preferences_dialog") as Gtk.Dialog;
 			adjustment = builder.get_object ("interval_adjustment") as Gtk.Adjustment;
 			interval_label = builder.get_object ("interval_label") as Gtk.Label;
-			interval_label = builder.get_object ("interval_label") as Gtk.Label;
 			var grid_indicator = builder.get_object ("grid1") as Gtk.Grid;
 			var grid_notification = builder.get_object ("grid2") as Gtk.Grid;
 			comboboxtext_upgrade_tool = builder.get_object ("comboboxtext_upgrade_tool") as Gtk.ComboBoxText;
