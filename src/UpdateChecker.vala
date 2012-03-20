@@ -23,13 +23,11 @@ public class UpdateChecker
 {
 	public signal void update_event (string[] packages, int count);
 	
-	private int interval = 2 * 60;
 	private string[] old_list = new string[]{"No updates"};
-	private int package_count = 0;
 	
 	public UpdateChecker (int update_interval)
 	{
-		interval = update_interval;
+		this.update_interval = update_interval;
 	}
 	
 	public void* check_for_updates()
@@ -95,16 +93,15 @@ public class UpdateChecker
 			Thread.usleep(update_interval * 1000000);
 		}
 	}
-	
+	[Description(nick = "update interval in seconds", blurb = "Defines how often check_for_updates() should be executed")]
 	public int update_interval
 	{
-		set { interval = value; }
-		get { return interval; }
+		get; set; default = 2 * 60;
 	}
-	
+
+	[Description(nick = "number of available updates", blurb = "Returns the number of available updates")]
 	public int count
 	{
-		set { package_count = value; }
-		get { return package_count; }
+		get; private set; default = 0;
 	}
 }

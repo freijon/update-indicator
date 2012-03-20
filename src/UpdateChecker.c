@@ -56,11 +56,11 @@ struct _UpdateCheckerClass {
 };
 
 struct _UpdateCheckerPrivate {
-	gint interval;
 	gchar** old_list;
 	gint old_list_length1;
 	gint _old_list_size_;
-	gint package_count;
+	gint _update_interval;
+	gint _count;
 };
 
 struct _ParamSpecUpdateChecker {
@@ -83,13 +83,13 @@ enum  {
 };
 UpdateChecker* update_checker_new (gint update_interval);
 UpdateChecker* update_checker_construct (GType object_type, gint update_interval);
+void update_checker_set_update_interval (UpdateChecker* self, gint value);
 void* update_checker_check_for_updates (UpdateChecker* self);
 static gchar** _vala_array_dup1 (gchar** self, int length);
-void update_checker_set_count (UpdateChecker* self, gint value);
+static void update_checker_set_count (UpdateChecker* self, gint value);
 gint update_checker_get_count (UpdateChecker* self);
 static gchar** _vala_array_dup2 (gchar** self, int length);
 gint update_checker_get_update_interval (UpdateChecker* self);
-void update_checker_set_update_interval (UpdateChecker* self, gint value);
 static void g_cclosure_user_marshal_VOID__BOXED_INT_INT (GClosure * closure, GValue * return_value, guint n_param_values, const GValue * param_values, gpointer invocation_hint, gpointer marshal_data);
 static void update_checker_finalize (UpdateChecker* obj);
 static void _vala_array_destroy (gpointer array, gint array_length, GDestroyNotify destroy_func);
@@ -102,7 +102,7 @@ UpdateChecker* update_checker_construct (GType object_type, gint update_interval
 	gint _tmp0_;
 	self = (UpdateChecker*) g_type_create_instance (object_type);
 	_tmp0_ = update_interval;
-	self->priv->interval = _tmp0_;
+	update_checker_set_update_interval (self, _tmp0_);
 	return self;
 }
 
@@ -168,12 +168,11 @@ void* update_checker_check_for_updates (UpdateChecker* self) {
 		gchar** _tmp45_;
 		gint _tmp45__length1;
 		const gchar* _tmp46_;
+		gchar** _tmp55_;
+		gint _tmp55__length1;
 		gchar** _tmp56_;
 		gint _tmp56__length1;
-		gchar** _tmp57_;
-		gint _tmp57__length1;
-		gint _tmp58_;
-		gint _tmp59_;
+		gint _tmp57_;
 		_tmp0_ = g_strdup ("");
 		output = _tmp0_;
 		{
@@ -373,45 +372,42 @@ void* update_checker_check_for_updates (UpdateChecker* self) {
 				gchar** _tmp49_;
 				gint _tmp49__length1;
 				gint _tmp50_;
-				gint _tmp51_;
 				_tmp48_ = packages;
 				_tmp48__length1 = packages_length1;
 				update_checker_set_count (self, _tmp48__length1);
 				_tmp49_ = packages;
 				_tmp49__length1 = packages_length1;
-				_tmp50_ = update_checker_get_count (self);
-				_tmp51_ = _tmp50_;
-				g_signal_emit_by_name (self, "update-event", _tmp49_, _tmp49__length1, _tmp51_);
+				_tmp50_ = self->priv->_count;
+				g_signal_emit_by_name (self, "update-event", _tmp49_, _tmp49__length1, _tmp50_);
 			}
 		} else {
-			gboolean _tmp52_;
-			_tmp52_ = is_same;
-			if (!_tmp52_) {
-				gchar* _tmp53_;
-				gchar** _tmp54_ = NULL;
-				gchar** _tmp55_;
-				gint _tmp55__length1;
+			gboolean _tmp51_;
+			_tmp51_ = is_same;
+			if (!_tmp51_) {
+				gchar* _tmp52_;
+				gchar** _tmp53_ = NULL;
+				gchar** _tmp54_;
+				gint _tmp54__length1;
 				update_checker_set_count (self, 0);
-				_tmp53_ = g_strdup ("No updates");
-				_tmp54_ = g_new0 (gchar*, 1 + 1);
-				_tmp54_[0] = _tmp53_;
-				_tmp55_ = _tmp54_;
-				_tmp55__length1 = 1;
-				g_signal_emit_by_name (self, "update-event", _tmp55_, 1, 0);
-				_tmp55_ = (_vala_array_free (_tmp55_, _tmp55__length1, (GDestroyNotify) g_free), NULL);
+				_tmp52_ = g_strdup ("No updates");
+				_tmp53_ = g_new0 (gchar*, 1 + 1);
+				_tmp53_[0] = _tmp52_;
+				_tmp54_ = _tmp53_;
+				_tmp54__length1 = 1;
+				g_signal_emit_by_name (self, "update-event", _tmp54_, 1, 0);
+				_tmp54_ = (_vala_array_free (_tmp54_, _tmp54__length1, (GDestroyNotify) g_free), NULL);
 			}
 		}
-		_tmp56_ = packages;
-		_tmp56__length1 = packages_length1;
-		_tmp57_ = (_tmp56_ != NULL) ? _vala_array_dup2 (_tmp56_, _tmp56__length1) : ((gpointer) _tmp56_);
-		_tmp57__length1 = _tmp56__length1;
+		_tmp55_ = packages;
+		_tmp55__length1 = packages_length1;
+		_tmp56_ = (_tmp55_ != NULL) ? _vala_array_dup2 (_tmp55_, _tmp55__length1) : ((gpointer) _tmp55_);
+		_tmp56__length1 = _tmp55__length1;
 		self->priv->old_list = (_vala_array_free (self->priv->old_list, self->priv->old_list_length1, (GDestroyNotify) g_free), NULL);
-		self->priv->old_list = _tmp57_;
-		self->priv->old_list_length1 = _tmp57__length1;
+		self->priv->old_list = _tmp56_;
+		self->priv->old_list_length1 = _tmp56__length1;
 		self->priv->_old_list_size_ = self->priv->old_list_length1;
-		_tmp58_ = update_checker_get_update_interval (self);
-		_tmp59_ = _tmp58_;
-		g_usleep ((gulong) (_tmp59_ * 1000000));
+		_tmp57_ = self->priv->_update_interval;
+		g_usleep ((gulong) (_tmp57_ * 1000000));
 		packages = (_vala_array_free (packages, packages_length1, (GDestroyNotify) g_free), NULL);
 		_tmp3_ = (_vala_array_free (_tmp3_, _tmp3__length1, (GDestroyNotify) g_free), NULL);
 		_g_free0 (output);
@@ -424,7 +420,7 @@ gint update_checker_get_update_interval (UpdateChecker* self) {
 	gint result;
 	gint _tmp0_;
 	g_return_val_if_fail (self != NULL, 0);
-	_tmp0_ = self->priv->interval;
+	_tmp0_ = self->priv->_update_interval;
 	result = _tmp0_;
 	return result;
 }
@@ -434,7 +430,7 @@ void update_checker_set_update_interval (UpdateChecker* self, gint value) {
 	gint _tmp0_;
 	g_return_if_fail (self != NULL);
 	_tmp0_ = value;
-	self->priv->interval = _tmp0_;
+	self->priv->_update_interval = _tmp0_;
 }
 
 
@@ -442,17 +438,17 @@ gint update_checker_get_count (UpdateChecker* self) {
 	gint result;
 	gint _tmp0_;
 	g_return_val_if_fail (self != NULL, 0);
-	_tmp0_ = self->priv->package_count;
+	_tmp0_ = self->priv->_count;
 	result = _tmp0_;
 	return result;
 }
 
 
-void update_checker_set_count (UpdateChecker* self, gint value) {
+static void update_checker_set_count (UpdateChecker* self, gint value) {
 	gint _tmp0_;
 	g_return_if_fail (self != NULL);
 	_tmp0_ = value;
-	self->priv->package_count = _tmp0_;
+	self->priv->_count = _tmp0_;
 }
 
 
@@ -598,14 +594,14 @@ static void update_checker_instance_init (UpdateChecker * self) {
 	gchar* _tmp0_;
 	gchar** _tmp1_ = NULL;
 	self->priv = UPDATE_CHECKER_GET_PRIVATE (self);
-	self->priv->interval = 2 * 60;
 	_tmp0_ = g_strdup ("No updates");
 	_tmp1_ = g_new0 (gchar*, 1 + 1);
 	_tmp1_[0] = _tmp0_;
 	self->priv->old_list = _tmp1_;
 	self->priv->old_list_length1 = 1;
 	self->priv->_old_list_size_ = self->priv->old_list_length1;
-	self->priv->package_count = 0;
+	self->priv->_update_interval = 2 * 60;
+	self->priv->_count = 0;
 	self->ref_count = 1;
 }
 
