@@ -19,3 +19,7 @@ EXTRA_DIST = $(update_indicatordoc_DATA)
 # Remove doc directory on uninstall
 uninstall-local:
 	-rm -r $(update_indicatordocdir)
+
+
+AM_VALAFLAGS = -g \
+	--save-temps 

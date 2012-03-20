@@ -262,6 +262,9 @@ update_indicatordoc_DATA = \
 	NEWS
 
 EXTRA_DIST = $(update_indicatordoc_DATA)
+AM_VALAFLAGS = -g \
+	--save-temps 
+
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
