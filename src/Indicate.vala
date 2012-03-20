@@ -43,7 +43,7 @@ public class Indicate
 	{
 		int check_interval = GConfInterface.get_int (GConfInterface.Key.CHECK_INTERVAL);
 		
-		indicator = new Indicator ("update-notifier", "update-indicator", AppIndicator.IndicatorCategory.APPLICATION_STATUS);
+		indicator = new Indicator ("Update Indicator", "no-update-available", AppIndicator.IndicatorCategory.APPLICATION_STATUS);
 		indicator.set_icon(PASSIVE_ICON);
 		indicator.set_status (GConfInterface.get_bool (GConfInterface.Key.SHOW_PASSIVE_ICON) ? AppIndicator.IndicatorStatus.ACTIVE : AppIndicator.IndicatorStatus.PASSIVE);
 		
@@ -188,17 +188,17 @@ public class Indicate
 			ex.height = 10;
 
 			co.set_source_rgb(0.2, 0.2, 0.2);
-			co.select_font_face ("Ubuntu", Cairo.FontSlant.NORMAL, Cairo.FontWeight.NORMAL);
+			co.select_font_face ("Ubuntu Mono", Cairo.FontSlant.NORMAL, Cairo.FontWeight.NORMAL);
 			co.set_font_size(20);
 			co.text_extents(@"$(count)", out ex);
 			co.move_to(24 - 1 - ex.width / 2, 24 -1 + ex.height / 2 );
 			co.show_text(@"$(count)");
 
-			icon.write_to_png ("/tmp/icon.png");
+			icon.write_to_png ("/tmp/update_indicator.png"); //TODO Change the way how I access the temporary image. Write to memory would be nicer.
 			icon.show_page();
 			icon.finish();
 			indicator.set_icon(ACTIVE_ICON_EMPTY);
-			indicator.set_icon("/tmp/icon.png");
+			indicator.set_icon("/tmp/update_indicator.png");
 		}
 		else
 		{

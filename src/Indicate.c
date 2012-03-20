@@ -203,7 +203,7 @@ Indicate* indicate_construct (GType object_type) {
 	self = (Indicate*) g_type_create_instance (object_type);
 	_tmp0_ = gconf_interface_get_int (GCONF_INTERFACE_KEY_CHECK_INTERVAL);
 	check_interval = _tmp0_;
-	_tmp1_ = app_indicator_new ("update-notifier", "update-indicator", APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
+	_tmp1_ = app_indicator_new ("Update Indicator", "no-update-available", APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
 	_g_object_unref0 (self->priv->indicator);
 	self->priv->indicator = _tmp1_;
 	_tmp2_ = self->priv->indicator;
@@ -756,7 +756,7 @@ static void indicate_set_active_icon (Indicate* self, gint count) {
 		_tmp4_ = co;
 		cairo_set_source_rgb (_tmp4_, 0.2, 0.2, 0.2);
 		_tmp5_ = co;
-		cairo_select_font_face (_tmp5_, "Ubuntu", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+		cairo_select_font_face (_tmp5_, "Ubuntu Mono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 		_tmp6_ = co;
 		cairo_set_font_size (_tmp6_, (gdouble) 20);
 		_tmp7_ = co;
@@ -779,7 +779,7 @@ static void indicate_set_active_icon (Indicate* self, gint count) {
 		cairo_show_text (_tmp17_, _tmp20_);
 		_g_free0 (_tmp20_);
 		_tmp21_ = icon;
-		cairo_surface_write_to_png (_tmp21_, "/tmp/icon.png");
+		cairo_surface_write_to_png (_tmp21_, "/tmp/update_indicator.png");
 		_tmp22_ = icon;
 		cairo_surface_show_page (_tmp22_);
 		_tmp23_ = icon;
@@ -787,7 +787,7 @@ static void indicate_set_active_icon (Indicate* self, gint count) {
 		_tmp24_ = self->priv->indicator;
 		app_indicator_set_icon (_tmp24_, INDICATE_ACTIVE_ICON_EMPTY);
 		_tmp25_ = self->priv->indicator;
-		app_indicator_set_icon (_tmp25_, "/tmp/icon.png");
+		app_indicator_set_icon (_tmp25_, "/tmp/update_indicator.png");
 		_cairo_destroy0 (co);
 		_cairo_surface_destroy0 (icon);
 	} else {
