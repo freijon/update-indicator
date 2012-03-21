@@ -168,7 +168,7 @@ PreferencesDialog* preferences_dialog_construct (GType object_type) {
 		_tmp1_ = self->priv->builder;
 		gtk_builder_add_from_file (_tmp1_, PREFERENCES_DIALOG_UI_FILE, &_inner_error_);
 		if (_inner_error_ != NULL) {
-			goto __catch18_g_error;
+			goto __catch20_g_error;
 		}
 		_tmp2_ = self->priv->builder;
 		gtk_builder_connect_signals (_tmp2_, self);
@@ -230,8 +230,8 @@ PreferencesDialog* preferences_dialog_construct (GType object_type) {
 		_g_object_unref0 (grid_notification);
 		_g_object_unref0 (grid_indicator);
 	}
-	goto __finally18;
-	__catch18_g_error:
+	goto __finally20;
+	__catch20_g_error:
 	{
 		GError* e = NULL;
 		FILE* _tmp36_;
@@ -245,7 +245,7 @@ PreferencesDialog* preferences_dialog_construct (GType object_type) {
 		fprintf (_tmp36_, "Could not load UI: %s\n", _tmp38_);
 		_g_error_free0 (e);
 	}
-	__finally18:
+	__finally20:
 	if (_inner_error_ != NULL) {
 		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
 		g_clear_error (&_inner_error_);
@@ -272,8 +272,8 @@ void preferences_dialog_show (PreferencesDialog* self) {
 		_tmp1_ = self->priv->dialog;
 		gtk_widget_hide ((GtkWidget*) _tmp1_);
 	}
-	goto __finally19;
-	__catch19_g_error:
+	goto __finally21;
+	__catch21_g_error:
 	{
 		GError* e = NULL;
 		FILE* _tmp2_;
@@ -287,7 +287,7 @@ void preferences_dialog_show (PreferencesDialog* self) {
 		fprintf (_tmp2_, "Could not show UI: %s\n", _tmp4_);
 		_g_error_free0 (e);
 	}
-	__finally19:
+	__finally21:
 	if (_inner_error_ != NULL) {
 		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
 		g_clear_error (&_inner_error_);
