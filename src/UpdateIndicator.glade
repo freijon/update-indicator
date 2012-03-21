@@ -162,7 +162,8 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</pro
                             <property name="margin_right">5</property>
                             <property name="margin_bottom">5</property>
                             <items>
-                              <item translatable="yes">Use update-manager</item>
+                              <item translatable="yes">Show updates in update-manager</item>
+                              <item translatable="yes">Upgrade using update-manager</item>
                               <item translatable="yes">Upgrade in background</item>
                             </items>
                           </object>
