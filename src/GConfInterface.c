@@ -142,71 +142,9 @@ gboolean gconf_interface_get_bool (GConfInterfaceKey key) {
 				_tmp4_ = gconf_client_get_bool (_tmp3_, GCONF_INTERFACE_NOTIFY, &_inner_error_);
 				_tmp5_ = _tmp4_;
 				if (_inner_error_ != NULL) {
-					goto __catch6_g_error;
-				}
-				output = _tmp5_;
-			}
-			goto __finally6;
-			__catch6_g_error:
-			{
-				GError* e = NULL;
-				e = _inner_error_;
-				_inner_error_ = NULL;
-				_g_error_free0 (e);
-			}
-			__finally6:
-			if (_inner_error_ != NULL) {
-				_g_object_unref0 (client);
-				g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
-				g_clear_error (&_inner_error_);
-				return FALSE;
-			}
-			break;
-		}
-		case GCONF_INTERFACE_KEY_MANAGER_POPUP:
-		{
-			{
-				GConfClient* _tmp6_;
-				gboolean _tmp7_ = FALSE;
-				gboolean _tmp8_;
-				_tmp6_ = client;
-				_tmp7_ = gconf_client_get_bool (_tmp6_, GCONF_INTERFACE_MANAGER_POPUP, &_inner_error_);
-				_tmp8_ = _tmp7_;
-				if (_inner_error_ != NULL) {
-					goto __catch7_g_error;
-				}
-				output = _tmp8_;
-			}
-			goto __finally7;
-			__catch7_g_error:
-			{
-				GError* e = NULL;
-				e = _inner_error_;
-				_inner_error_ = NULL;
-				_g_error_free0 (e);
-			}
-			__finally7:
-			if (_inner_error_ != NULL) {
-				_g_object_unref0 (client);
-				g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
-				g_clear_error (&_inner_error_);
-				return FALSE;
-			}
-			break;
-		}
-		case GCONF_INTERFACE_KEY_SHOW_PASSIVE_ICON:
-		{
-			{
-				GConfClient* _tmp9_;
-				gboolean _tmp10_ = FALSE;
-				gboolean _tmp11_;
-				_tmp9_ = client;
-				_tmp10_ = gconf_client_get_bool (_tmp9_, GCONF_INTERFACE_SHOW_PASSIVE_ICON, &_inner_error_);
-				_tmp11_ = _tmp10_;
-				if (_inner_error_ != NULL) {
 					goto __catch8_g_error;
 				}
-				output = _tmp11_;
+				output = _tmp5_;
 			}
 			goto __finally8;
 			__catch8_g_error:
@@ -225,19 +163,19 @@ gboolean gconf_interface_get_bool (GConfInterfaceKey key) {
 			}
 			break;
 		}
-		case GCONF_INTERFACE_KEY_SHOW_NUMBER_OF_UPDATES:
+		case GCONF_INTERFACE_KEY_MANAGER_POPUP:
 		{
 			{
-				GConfClient* _tmp12_;
-				gboolean _tmp13_ = FALSE;
-				gboolean _tmp14_;
-				_tmp12_ = client;
-				_tmp13_ = gconf_client_get_bool (_tmp12_, GCONF_INTERFACE_SHOW_NUMBER_OF_UPDATES, &_inner_error_);
-				_tmp14_ = _tmp13_;
+				GConfClient* _tmp6_;
+				gboolean _tmp7_ = FALSE;
+				gboolean _tmp8_;
+				_tmp6_ = client;
+				_tmp7_ = gconf_client_get_bool (_tmp6_, GCONF_INTERFACE_MANAGER_POPUP, &_inner_error_);
+				_tmp8_ = _tmp7_;
 				if (_inner_error_ != NULL) {
 					goto __catch9_g_error;
 				}
-				output = _tmp14_;
+				output = _tmp8_;
 			}
 			goto __finally9;
 			__catch9_g_error:
@@ -248,6 +186,68 @@ gboolean gconf_interface_get_bool (GConfInterfaceKey key) {
 				_g_error_free0 (e);
 			}
 			__finally9:
+			if (_inner_error_ != NULL) {
+				_g_object_unref0 (client);
+				g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
+				g_clear_error (&_inner_error_);
+				return FALSE;
+			}
+			break;
+		}
+		case GCONF_INTERFACE_KEY_SHOW_PASSIVE_ICON:
+		{
+			{
+				GConfClient* _tmp9_;
+				gboolean _tmp10_ = FALSE;
+				gboolean _tmp11_;
+				_tmp9_ = client;
+				_tmp10_ = gconf_client_get_bool (_tmp9_, GCONF_INTERFACE_SHOW_PASSIVE_ICON, &_inner_error_);
+				_tmp11_ = _tmp10_;
+				if (_inner_error_ != NULL) {
+					goto __catch10_g_error;
+				}
+				output = _tmp11_;
+			}
+			goto __finally10;
+			__catch10_g_error:
+			{
+				GError* e = NULL;
+				e = _inner_error_;
+				_inner_error_ = NULL;
+				_g_error_free0 (e);
+			}
+			__finally10:
+			if (_inner_error_ != NULL) {
+				_g_object_unref0 (client);
+				g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
+				g_clear_error (&_inner_error_);
+				return FALSE;
+			}
+			break;
+		}
+		case GCONF_INTERFACE_KEY_SHOW_NUMBER_OF_UPDATES:
+		{
+			{
+				GConfClient* _tmp12_;
+				gboolean _tmp13_ = FALSE;
+				gboolean _tmp14_;
+				_tmp12_ = client;
+				_tmp13_ = gconf_client_get_bool (_tmp12_, GCONF_INTERFACE_SHOW_NUMBER_OF_UPDATES, &_inner_error_);
+				_tmp14_ = _tmp13_;
+				if (_inner_error_ != NULL) {
+					goto __catch11_g_error;
+				}
+				output = _tmp14_;
+			}
+			goto __finally11;
+			__catch11_g_error:
+			{
+				GError* e = NULL;
+				e = _inner_error_;
+				_inner_error_ = NULL;
+				_g_error_free0 (e);
+			}
+			__finally11:
 			if (_inner_error_ != NULL) {
 				_g_object_unref0 (client);
 				g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
@@ -290,19 +290,19 @@ gint gconf_interface_get_int (GConfInterfaceKey key) {
 				_tmp4_ = gconf_client_get_int (_tmp3_, GCONF_INTERFACE_CHECK_INTERVAL, &_inner_error_);
 				_tmp5_ = _tmp4_;
 				if (_inner_error_ != NULL) {
-					goto __catch10_g_error;
+					goto __catch12_g_error;
 				}
 				output = _tmp5_;
 			}
-			goto __finally10;
-			__catch10_g_error:
+			goto __finally12;
+			__catch12_g_error:
 			{
 				GError* e = NULL;
 				e = _inner_error_;
 				_inner_error_ = NULL;
 				_g_error_free0 (e);
 			}
-			__finally10:
+			__finally12:
 			if (_inner_error_ != NULL) {
 				_g_object_unref0 (client);
 				g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
@@ -322,19 +322,19 @@ gint gconf_interface_get_int (GConfInterfaceKey key) {
 				_tmp7_ = gconf_client_get_int (_tmp6_, GCONF_INTERFACE_UPDATE_TOOL, &_inner_error_);
 				_tmp8_ = _tmp7_;
 				if (_inner_error_ != NULL) {
-					goto __catch11_g_error;
+					goto __catch13_g_error;
 				}
 				output = _tmp8_;
 			}
-			goto __finally11;
-			__catch11_g_error:
+			goto __finally13;
+			__catch13_g_error:
 			{
 				GError* e = NULL;
 				e = _inner_error_;
 				_inner_error_ = NULL;
 				_g_error_free0 (e);
 			}
-			__finally11:
+			__finally13:
 			if (_inner_error_ != NULL) {
 				_g_object_unref0 (client);
 				g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
@@ -372,11 +372,11 @@ void gconf_interface_set_bool (GConfInterfaceKey key, gboolean value) {
 				_tmp4_ = value;
 				gconf_client_set_bool (_tmp3_, GCONF_INTERFACE_NOTIFY, _tmp4_, &_inner_error_);
 				if (_inner_error_ != NULL) {
-					goto __catch12_g_error;
+					goto __catch14_g_error;
 				}
 			}
-			goto __finally12;
-			__catch12_g_error:
+			goto __finally14;
+			__catch14_g_error:
 			{
 				GError* e = NULL;
 				FILE* _tmp5_;
@@ -390,7 +390,7 @@ void gconf_interface_set_bool (GConfInterfaceKey key, gboolean value) {
 				fprintf (_tmp5_, "Error: Failed to save setting \"NOTIFY\": %s\n", _tmp7_);
 				_g_error_free0 (e);
 			}
-			__finally12:
+			__finally14:
 			if (_inner_error_ != NULL) {
 				_g_object_unref0 (client);
 				g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
@@ -408,11 +408,11 @@ void gconf_interface_set_bool (GConfInterfaceKey key, gboolean value) {
 				_tmp9_ = value;
 				gconf_client_set_bool (_tmp8_, GCONF_INTERFACE_MANAGER_POPUP, _tmp9_, &_inner_error_);
 				if (_inner_error_ != NULL) {
-					goto __catch13_g_error;
+					goto __catch15_g_error;
 				}
 			}
-			goto __finally13;
-			__catch13_g_error:
+			goto __finally15;
+			__catch15_g_error:
 			{
 				GError* e = NULL;
 				FILE* _tmp10_;
@@ -426,7 +426,7 @@ void gconf_interface_set_bool (GConfInterfaceKey key, gboolean value) {
 				fprintf (_tmp10_, "Error: Failed to save setting \"MANAGER_POPUP\": %s\n", _tmp12_);
 				_g_error_free0 (e);
 			}
-			__finally13:
+			__finally15:
 			if (_inner_error_ != NULL) {
 				_g_object_unref0 (client);
 				g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
@@ -444,11 +444,11 @@ void gconf_interface_set_bool (GConfInterfaceKey key, gboolean value) {
 				_tmp14_ = value;
 				gconf_client_set_bool (_tmp13_, GCONF_INTERFACE_SHOW_PASSIVE_ICON, _tmp14_, &_inner_error_);
 				if (_inner_error_ != NULL) {
-					goto __catch14_g_error;
+					goto __catch16_g_error;
 				}
 			}
-			goto __finally14;
-			__catch14_g_error:
+			goto __finally16;
+			__catch16_g_error:
 			{
 				GError* e = NULL;
 				FILE* _tmp15_;
@@ -462,7 +462,7 @@ void gconf_interface_set_bool (GConfInterfaceKey key, gboolean value) {
 				fprintf (_tmp15_, "Error: Failed to save setting \"SHOW_PASSIVE_ICON\": %s\n", _tmp17_);
 				_g_error_free0 (e);
 			}
-			__finally14:
+			__finally16:
 			if (_inner_error_ != NULL) {
 				_g_object_unref0 (client);
 				g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
@@ -480,11 +480,11 @@ void gconf_interface_set_bool (GConfInterfaceKey key, gboolean value) {
 				_tmp19_ = value;
 				gconf_client_set_bool (_tmp18_, GCONF_INTERFACE_SHOW_NUMBER_OF_UPDATES, _tmp19_, &_inner_error_);
 				if (_inner_error_ != NULL) {
-					goto __catch15_g_error;
+					goto __catch17_g_error;
 				}
 			}
-			goto __finally15;
-			__catch15_g_error:
+			goto __finally17;
+			__catch17_g_error:
 			{
 				GError* e = NULL;
 				FILE* _tmp20_;
@@ -498,7 +498,7 @@ void gconf_interface_set_bool (GConfInterfaceKey key, gboolean value) {
 				fprintf (_tmp20_, "Error: Failed to save setting \"SHOW_NUMBER_OF_UPDATES\": %s\n", _tmp22_);
 				_g_error_free0 (e);
 			}
-			__finally15:
+			__finally17:
 			if (_inner_error_ != NULL) {
 				_g_object_unref0 (client);
 				g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
@@ -534,11 +534,11 @@ void gconf_interface_set_int (GConfInterfaceKey key, gint value) {
 				_tmp4_ = value;
 				gconf_client_set_int (_tmp3_, GCONF_INTERFACE_CHECK_INTERVAL, _tmp4_, &_inner_error_);
 				if (_inner_error_ != NULL) {
-					goto __catch16_g_error;
+					goto __catch18_g_error;
 				}
 			}
-			goto __finally16;
-			__catch16_g_error:
+			goto __finally18;
+			__catch18_g_error:
 			{
 				GError* e = NULL;
 				FILE* _tmp5_;
@@ -552,7 +552,7 @@ void gconf_interface_set_int (GConfInterfaceKey key, gint value) {
 				fprintf (_tmp5_, "Error: Failed to save setting \"CHECK_INTERVAL\": %s\n", _tmp7_);
 				_g_error_free0 (e);
 			}
-			__finally16:
+			__finally18:
 			if (_inner_error_ != NULL) {
 				_g_object_unref0 (client);
 				g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
@@ -570,11 +570,11 @@ void gconf_interface_set_int (GConfInterfaceKey key, gint value) {
 				_tmp9_ = value;
 				gconf_client_set_int (_tmp8_, GCONF_INTERFACE_UPDATE_TOOL, _tmp9_, &_inner_error_);
 				if (_inner_error_ != NULL) {
-					goto __catch17_g_error;
+					goto __catch19_g_error;
 				}
 			}
-			goto __finally17;
-			__catch17_g_error:
+			goto __finally19;
+			__catch19_g_error:
 			{
 				GError* e = NULL;
 				FILE* _tmp10_;
@@ -588,7 +588,7 @@ void gconf_interface_set_int (GConfInterfaceKey key, gint value) {
 				fprintf (_tmp10_, "Error: Failed to save setting \"UPDATE_TOOL\": %s\n", _tmp12_);
 				_g_error_free0 (e);
 			}
-			__finally17:
+			__finally19:
 			if (_inner_error_ != NULL) {
 				_g_object_unref0 (client);
 				g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
