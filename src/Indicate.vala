@@ -31,6 +31,7 @@ public class Indicate
 	
 	private Gtk.Menu menu;
 	private Gtk.MenuItem how_many;
+	private Gtk.MenuItem menu_execute;
 	
 	private UpdateChecker checker;
 	
@@ -82,8 +83,9 @@ public class Indicate
 		how_many = new Gtk.MenuItem.with_label ("No updates available");
 		how_many.sensitive = false;
 		
-		var menu_execute = new Gtk.ImageMenuItem.from_stock (Gtk.Stock.EXECUTE, null);
+		menu_execute = new Gtk.ImageMenuItem.from_stock (Gtk.Stock.EXECUTE, null);
 		menu_execute.activate.connect (on_execute_clicked);
+		menu_execute.sensitive = false;
 		
 		var menu_refresh = new Gtk.ImageMenuItem.from_stock (Gtk.Stock.REFRESH, null);
 		menu_refresh.activate.connect (on_refresh_clicked);
@@ -124,6 +126,7 @@ public class Indicate
 			
 			how_many.label = count.to_string() + (count == 1 ? " update" : " updates");
 			how_many.sensitive = true;
+			menu_execute.sensitive = true;
 			
 			var submenu_how_many = new Gtk.Menu();
 			foreach (string package in packages)
@@ -160,6 +163,7 @@ public class Indicate
 			indicator.set_status (GConfInterface.get_bool (GConfInterface.Key.SHOW_PASSIVE_ICON) ? AppIndicator.IndicatorStatus.ACTIVE : AppIndicator.IndicatorStatus.PASSIVE);
 			how_many.label = "No updates available";
 			how_many.sensitive = false;
+			menu_execute.sensitive = false;
 			if (GConfInterface.get_bool (GConfInterface.Key.NOTIFY))
 			{
 				var notify = new Notification ("Updates installed", "Your system is now up-to-date", PASSIVE_ICON);
@@ -208,13 +212,35 @@ public class Indicate
 	
 	private void on_execute_clicked (Gtk.Widget sender)
 	{
-		try 
+		switch (GConfInterface.get_int(GConfInterface.Key.UPDATE_TOOL))
 		{
-			Process.spawn_command_line_async (GConfInterface.get_int(GConfInterface.Key.UPDATE_TOOL) == 0 ? "update-manager" : "gksu \"apt-get upgrade -y\"");
-		}
-		catch (GLib.Error e)
-		{
-			stderr.printf("Failed to start \"update-manager\"\n");
+			case 0:
+				try {
+				Process.spawn_command_line_async ("python /usr/lib/update-notifier/backend_helper.py show_updates");
+				}
+				catch (GLib.Error e)
+				{
+					stderr.printf("Failed to show updates\nExecution of \"python /usr/lib/update-notifier/backend_helper.py show_updates\" failed\n");
+				}
+				break;
+			case 1:
+				try {
+				Process.spawn_command_line_async ("python /usr/lib/update-notifier/backend_helper.py install_all_updates");
+				}
+				catch (GLib.Error e)
+				{
+					stderr.printf("Failed to install updates\nExecution of \"python /usr/lib/update-notifier/backend_helper.py install_all_updates\" failed\n");
+				}
+				break;
+			case 2:
+				try {
+				Process.spawn_command_line_async ("gksu \"apt-get upgrade -y\"");
+				}
+				catch (GLib.Error e)
+				{
+					stderr.printf("Failed to install updates\nExecution of \"gksu \"apt-get upgrade -y\"\" failed\n");
+				}
+				break;
 		}
 	}
 	
@@ -222,11 +248,11 @@ public class Indicate
 	{
 		try
 		{
-			Process.spawn_command_line_async ("gksu apt-get update");
+			Process.spawn_command_line_async ("python /usr/lib/update-notifier/backend_helper.py check_updates");
 		}
 		catch (GLib.Error e)
 		{
-			stderr.printf("Failed to refresh package list\n");
+			stderr.printf("Failed to refresh package list\nExecution of \"python /usr/lib/update-notifier/backend_helper.py show_updates\" failed\n");
 		}
 	}
 	
