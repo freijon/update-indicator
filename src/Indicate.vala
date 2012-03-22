@@ -37,6 +37,8 @@ public class Indicate
 	
 	private const string ACTIVE_ICON = "/usr/local/share/update_indicator/software-update-available.png";
 	private const string ACTIVE_ICON_EMPTY = "/usr/local/share/update_indicator/software-update-available-empty.png";
+	private const string ACTIVE_ICON_URGENT = "/usr/local/share/update_indicator/software-update-urgent.png";
+	private const string ACTIVE_ICON_URGENT_EMPTY = "/usr/local/share/update_indicator/software-update-urgent-empty.png";
 	private const string PASSIVE_ICON = "/usr/local/share/update_indicator/no-update-available.png";
 	private const string GLADE_FILE = "/usr/local/share/update_indicator/UpdateIndicator.glade";
 		
@@ -112,7 +114,7 @@ public class Indicate
 		indicator.set_menu (menu);
 	}
 	
-	private void on_update (UpdateChecker sender, string[] packages, int count)
+	private void on_update (UpdateChecker sender, string[] packages, int count, bool is_security_update)
 	{
 		if (how_many.get_submenu() != null)
 		{
@@ -146,7 +148,7 @@ public class Indicate
 				}
 				
 				var notify = new Notification (count.to_string() + " new " + (count == 1 ? "update" : "updates") +
-					" available", package_list, ACTIVE_ICON);
+					" available", package_list, is_security_update ? ACTIVE_ICON_URGENT : ACTIVE_ICON);
 				try
 				{
 					notify.show ();
@@ -181,9 +183,11 @@ public class Indicate
 	
 	private void set_active_icon(int count)
 	{
+		bool is_security_update = checker.is_security_update;
+		
 		if (GConfInterface.get_bool (GConfInterface.Key.SHOW_NUMBER_OF_UPDATES))
 		{
-			var icon = new Cairo.ImageSurface.from_png(ACTIVE_ICON_EMPTY);
+			var icon = new Cairo.ImageSurface.from_png(is_security_update ? ACTIVE_ICON_URGENT_EMPTY : ACTIVE_ICON_EMPTY);
 			var co = new Context(icon);
 
 			var ex = TextExtents();
@@ -191,8 +195,11 @@ public class Indicate
 			ex.width = 10;
 			ex.height = 10;
 
-			co.set_source_rgb(0.2, 0.2, 0.2);
-			co.select_font_face ("Ubuntu Mono", Cairo.FontSlant.NORMAL, Cairo.FontWeight.NORMAL);
+			if (is_security_update)
+				co.set_source_rgb(0.9, 0.9, 0.9);
+			else
+				co.set_source_rgb(0.2, 0.2, 0.2);
+			co.select_font_face ("Ubuntu Mono", Cairo.FontSlant.NORMAL, Cairo.FontWeight.BOLD);
 			co.set_font_size(20);
 			co.text_extents(@"$(count)", out ex);
 			co.move_to(24 - 1 - ex.width / 2, 24 -1 + ex.height / 2 );
@@ -206,40 +213,40 @@ public class Indicate
 		}
 		else
 		{
-			indicator.set_icon(ACTIVE_ICON);
+			indicator.set_icon(is_security_update ? ACTIVE_ICON_URGENT : ACTIVE_ICON);
 		}
 	}
-	
+
 	private void on_execute_clicked (Gtk.Widget sender)
 	{
 		switch (GConfInterface.get_int(GConfInterface.Key.UPDATE_TOOL))
 		{
 			case 0:
 				try {
-				Process.spawn_command_line_async ("python /usr/lib/update-notifier/backend_helper.py show_updates");
+					Process.spawn_command_line_async ("python /usr/lib/update-notifier/backend_helper.py show_updates");
 				}
 				catch (GLib.Error e)
-				{
-					stderr.printf("Failed to show updates\nExecution of \"python /usr/lib/update-notifier/backend_helper.py show_updates\" failed\n");
-				}
+			{
+				stderr.printf("Failed to show updates\nExecution of \"python /usr/lib/update-notifier/backend_helper.py show_updates\" failed\n");
+			}
 				break;
 			case 1:
 				try {
-				Process.spawn_command_line_async ("python /usr/lib/update-notifier/backend_helper.py install_all_updates");
+					Process.spawn_command_line_async ("python /usr/lib/update-notifier/backend_helper.py install_all_updates");
 				}
 				catch (GLib.Error e)
-				{
-					stderr.printf("Failed to install updates\nExecution of \"python /usr/lib/update-notifier/backend_helper.py install_all_updates\" failed\n");
-				}
+			{
+				stderr.printf("Failed to install updates\nExecution of \"python /usr/lib/update-notifier/backend_helper.py install_all_updates\" failed\n");
+			}
 				break;
 			case 2:
 				try {
-				Process.spawn_command_line_async ("gksu \"apt-get upgrade -y\"");
+					Process.spawn_command_line_async ("gksu \"apt-get upgrade -y\"");
 				}
 				catch (GLib.Error e)
-				{
-					stderr.printf("Failed to install updates\nExecution of \"gksu \"apt-get upgrade -y\"\" failed\n");
-				}
+			{
+				stderr.printf("Failed to install updates\nExecution of \"gksu \"apt-get upgrade -y\"\" failed\n");
+			}
 				break;
 		}
 	}
