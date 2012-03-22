@@ -21,7 +21,7 @@
 
 public class UpdateChecker
 {
-	public signal void update_event (string[] packages, int count);
+	public signal void update_event (string[] packages, int count, bool is_security_update);
 	
 	private string[] old_list = new string[]{"No updates"};
 	
@@ -37,11 +37,13 @@ public class UpdateChecker
 			string output = "";
 			try
 			{
-				Process.spawn_command_line_sync ("aptitude search ~U -F %p", out output);
+				Process.spawn_command_line_sync ("/usr/lib/update-notifier/apt-check -p", out output, out output); //Packages are written to stderr, so the first output is just a dummy.
+				if (output.length > 0)
+					output+="\n";
 			}
 			catch (Error e)
 			{
-				stderr.printf("Failed to check for updates.\n--> is \"aptitude\" correctly installed on your system?\n");
+				stderr.printf("Failed to check for updates.\n--> is \"update-notifier\" installed correctly on your system?\n");
 			}
 			string[] packages = output.length > 0 ? output.split("\n") : new string[]{"No updates"};
 
@@ -51,11 +53,6 @@ public class UpdateChecker
 				{
 					packages.resize(packages.length -1);
 				}
-			}
-
-			for (int i = 0; i < packages.length; i++)
-			{
-				packages[i] = packages[i]._chomp ();
 			}
 			
 			bool is_same = true;
@@ -75,7 +72,8 @@ public class UpdateChecker
 				if (!is_same)
 				{
 					count = packages.length;
-					update_event(packages, count);
+					is_security_update = check_if_security_update ();
+					update_event(packages, count, is_security_update);
 				}
 			}
 
@@ -84,7 +82,7 @@ public class UpdateChecker
 				if (!is_same)
 				{
 					count = 0;
-					update_event(new string[]{"No updates"}, 0);
+					update_event(new string[]{"No updates"}, 0, false);
 				}
 			}
 			
@@ -93,6 +91,24 @@ public class UpdateChecker
 			Thread.usleep(update_interval * 1000000);
 		}
 	}
+
+	private bool check_if_security_update ()
+	{
+		string output = "";
+			try
+			{
+				Process.spawn_command_line_sync ("/usr/lib/update-notifier/apt-check --human-readable", out output);
+			}
+			catch (Error e)
+			{
+				stderr.printf("Failed to check if there are security updates.\n--> is \"update-notifier\" installed correctly on your system?\n");
+			}
+		int security_count = 0;
+		security_count = int.parse (output.split("\n")[1].split(" ")[0]);
+		if (security_count > 0) return true;
+		else return false;
+	}
+	
 	[Description(nick = "update interval in seconds", blurb = "Defines how often check_for_updates() should be executed")]
 	public int update_interval
 	{
@@ -103,5 +119,11 @@ public class UpdateChecker
 	public int count
 	{
 		get; private set; default = 0;
+	}
+
+	[Description(nick = "security update", blurb = "Is true if there are security updates available")]
+	public bool is_security_update
+	{
+		get; private set; default = false;
 	}
 }
