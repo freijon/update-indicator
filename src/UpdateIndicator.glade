@@ -7,11 +7,11 @@
     <property name="type_hint">dialog</property>
     <property name="skip_taskbar_hint">True</property>
     <property name="program_name">Update Indicator</property>
-    <property name="version">0.1</property>
+    <property name="version">0.1-git:20120327</property>
     <property name="copyright" translatable="yes">© 2011 "Jonas Frei" &lt;freijon@gmail.com&gt;</property>
     <property name="comments" translatable="yes">Informs about available updates</property>
-    <property name="website">mailto:freijon@gmail.com</property>
-    <property name="website_label" translatable="yes">"Jonas Frei" &lt;freijon@gmail.com&gt;</property>
+    <property name="website">https://bugs.launchpad.net/indicator-updatemanager</property>
+    <property name="website_label" translatable="yes">Report a bug...</property>
     <property name="license" translatable="yes">This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
