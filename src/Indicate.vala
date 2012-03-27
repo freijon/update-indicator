@@ -123,7 +123,7 @@ public class Indicate
 		
 		if (count > 0)
 		{
-			set_active_icon(count);
+			set_active_icon(count, is_security_update);
 			indicator.set_status (AppIndicator.IndicatorStatus.ACTIVE);
 			
 			how_many.label = count.to_string() + (count == 1 ? " update" : " updates");
@@ -181,24 +181,19 @@ public class Indicate
 		}
 	}
 	
-	private void set_active_icon(int count)
+	private void set_active_icon(int count, bool is_security_update)
 	{
-		bool is_security_update = checker.is_security_update;
-		
 		if (GConfInterface.get_bool (GConfInterface.Key.SHOW_NUMBER_OF_UPDATES))
 		{
 			var icon = new Cairo.ImageSurface.from_png(is_security_update ? ACTIVE_ICON_URGENT_EMPTY : ACTIVE_ICON_EMPTY);
-			var co = new Context(icon);
+			var co = new Cairo.Context(icon);
 
-			var ex = TextExtents();
+			var ex = Cairo.TextExtents();
 			ex.x_bearing = 10;
 			ex.width = 10;
 			ex.height = 10;
 
-			if (is_security_update)
-				co.set_source_rgb(0.9, 0.9, 0.9);
-			else
-				co.set_source_rgb(0.2, 0.2, 0.2);
+			co.set_source_rgb(0.2, 0.2, 0.2);
 			co.select_font_face ("Ubuntu Mono", Cairo.FontSlant.NORMAL, Cairo.FontWeight.BOLD);
 			co.set_font_size(20);
 			co.text_extents(@"$(count)", out ex);
@@ -286,7 +281,7 @@ public class Indicate
 		}
 		else
 		{
-			set_active_icon(checker.count);
+			set_active_icon(checker.count, checker.is_security_update);
 		}
 	}
 	
