@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-27 20:23+0200\n"
+"POT-Creation-Date: 2012-03-27 23:17+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -61,6 +61,10 @@ msgstr ""
 msgid "Show passive icon:"
 msgstr ""
 
+#: UpdateIndicator.glade:167
+msgid "Show updates in update-manager"
+msgstr ""
+
 #: UpdateIndicator.glade:15
 msgid ""
 "This program is free software: you can redistribute it and/or modify\n"
@@ -79,6 +83,14 @@ msgstr ""
 
 #: UpdateIndicator.glade:65
 msgid "Update Indicator Preferences"
+msgstr ""
+
+#: UpdateIndicator.glade:169
+msgid "Upgrade in background"
+msgstr ""
+
+#: UpdateIndicator.glade:168
+msgid "Upgrade using update-manager"
 msgstr ""
 
 #: UpdateIndicator.glade:11

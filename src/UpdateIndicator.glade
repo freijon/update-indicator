@@ -26,6 +26,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</property>
     <property name="authors">Jonas Frei</property>
     <property name="logo">/usr/local/share/update_indicator/software-update-available.png</property>
+    <property name="license_type">gpl-3-0</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox2">
         <property name="visible">True</property>
@@ -100,7 +101,8 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</pro
                               <object class="GtkLabel" id="interval_label">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">10 seconds</property>
+                                <property name="ypad">6</property>
+                                <property name="label" translatable="no">10 seconds</property>
                               </object>
                               <packing>
                                 <property name="expand">True</property>
@@ -174,7 +176,7 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</pro
                       <object class="GtkLabel" id="label2">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">&lt;b&gt;Upgrade tool&lt;/b&gt;</property>
+                        <property name="label" translatable="yes" context="Title for the tool selection frame">&lt;b&gt;Upgrade tool&lt;/b&gt;</property>
                         <property name="use_markup">True</property>
                       </object>
                     </child>
