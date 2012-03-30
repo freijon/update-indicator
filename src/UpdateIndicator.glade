@@ -102,7 +102,7 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</pro
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="ypad">6</property>
-                                <property name="label" translatable="no">10 seconds</property>
+                                <property name="label">10 seconds</property>
                               </object>
                               <packing>
                                 <property name="expand">True</property>
@@ -229,7 +229,7 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</pro
                                 <property name="can_focus">False</property>
                                 <property name="halign">start</property>
                                 <property name="hexpand">True</property>
-                                <property name="label" translatable="yes">Show notifications:</property>
+                                <property name="label" translatable="yes">Show notifications</property>
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
@@ -286,7 +286,7 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</pro
                                 <property name="can_focus">False</property>
                                 <property name="halign">start</property>
                                 <property name="xpad">1</property>
-                                <property name="label" translatable="yes">Show passive icon:</property>
+                                <property name="label" translatable="yes">Show passive icon</property>
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
@@ -301,7 +301,7 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</pro
                                 <property name="can_focus">False</property>
                                 <property name="halign">start</property>
                                 <property name="hexpand">True</property>
-                                <property name="label" translatable="yes">Display number of updates in icon:</property>
+                                <property name="label" translatable="yes">Display number of updates in icon</property>
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
