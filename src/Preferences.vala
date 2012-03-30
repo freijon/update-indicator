@@ -63,7 +63,6 @@ public class PreferencesDialog
 			grid_indicator.attach (checkbutton_passive_icon, 1, 0, 1, 1);
 			grid_indicator.attach (checkbutton_show_number, 1, 1, 1, 1);
 
-			dialog.show_all();
 		}
 		catch (GLib.Error e)
 		{
@@ -77,6 +76,7 @@ public class PreferencesDialog
 	{
 		try
 		{
+			dialog.show_all();
 			dialog.run ();
 			dialog.hide ();
 		}

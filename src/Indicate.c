@@ -56,14 +56,6 @@ typedef struct _IndicatePrivate IndicatePrivate;
 
 typedef struct _UpdateChecker UpdateChecker;
 typedef struct _UpdateCheckerClass UpdateCheckerClass;
-#define _g_object_unref0(var) ((var == NULL) ? NULL : (var = (g_object_unref (var), NULL)))
-#define _update_checker_unref0(var) ((var == NULL) ? NULL : (var = (update_checker_unref (var), NULL)))
-
-#define GCONF_INTERFACE_TYPE_KEY (gconf_interface_key_get_type ())
-#define _g_error_free0(var) ((var == NULL) ? NULL : (var = (g_error_free (var), NULL)))
-#define _g_free0(var) (var = (g_free (var), NULL))
-#define _cairo_destroy0(var) ((var == NULL) ? NULL : (var = (cairo_destroy (var), NULL)))
-#define _cairo_surface_destroy0(var) ((var == NULL) ? NULL : (var = (cairo_surface_destroy (var), NULL)))
 
 #define TYPE_PREFERENCES_DIALOG (preferences_dialog_get_type ())
 #define PREFERENCES_DIALOG(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_PREFERENCES_DIALOG, PreferencesDialog))
@@ -74,7 +66,15 @@ typedef struct _UpdateCheckerClass UpdateCheckerClass;
 
 typedef struct _PreferencesDialog PreferencesDialog;
 typedef struct _PreferencesDialogClass PreferencesDialogClass;
+#define _g_object_unref0(var) ((var == NULL) ? NULL : (var = (g_object_unref (var), NULL)))
+#define _update_checker_unref0(var) ((var == NULL) ? NULL : (var = (update_checker_unref (var), NULL)))
 #define _preferences_dialog_unref0(var) ((var == NULL) ? NULL : (var = (preferences_dialog_unref (var), NULL)))
+
+#define GCONF_INTERFACE_TYPE_KEY (gconf_interface_key_get_type ())
+#define _g_error_free0(var) ((var == NULL) ? NULL : (var = (g_error_free (var), NULL)))
+#define _g_free0(var) (var = (g_free (var), NULL))
+#define _cairo_destroy0(var) ((var == NULL) ? NULL : (var = (cairo_destroy (var), NULL)))
+#define _cairo_surface_destroy0(var) ((var == NULL) ? NULL : (var = (cairo_surface_destroy (var), NULL)))
 typedef struct _ParamSpecIndicate ParamSpecIndicate;
 
 struct _Indicate {
@@ -95,6 +95,8 @@ struct _IndicatePrivate {
 	GtkMenuItem* how_many;
 	GtkMenuItem* menu_execute;
 	UpdateChecker* checker;
+	PreferencesDialog* dialog;
+	GtkDialog* about_dialog;
 };
 
 typedef enum  {
@@ -127,6 +129,13 @@ void value_set_update_checker (GValue* value, gpointer v_object);
 void value_take_update_checker (GValue* value, gpointer v_object);
 gpointer value_get_update_checker (const GValue* value);
 GType update_checker_get_type (void) G_GNUC_CONST;
+gpointer preferences_dialog_ref (gpointer instance);
+void preferences_dialog_unref (gpointer instance);
+GParamSpec* param_spec_preferences_dialog (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
+void value_set_preferences_dialog (GValue* value, gpointer v_object);
+void value_take_preferences_dialog (GValue* value, gpointer v_object);
+gpointer value_get_preferences_dialog (const GValue* value);
+GType preferences_dialog_get_type (void) G_GNUC_CONST;
 #define INDICATE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), TYPE_INDICATE, IndicatePrivate))
 enum  {
 	INDICATE_DUMMY_PROPERTY
@@ -161,13 +170,6 @@ static void _gtk_main_quit_gtk_menu_item_activate (GtkMenuItem* _sender, gpointe
 static void indicate_set_active_icon (Indicate* self, gint count, gboolean is_security_update);
 PreferencesDialog* preferences_dialog_new (void);
 PreferencesDialog* preferences_dialog_construct (GType object_type);
-gpointer preferences_dialog_ref (gpointer instance);
-void preferences_dialog_unref (gpointer instance);
-GParamSpec* param_spec_preferences_dialog (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
-void value_set_preferences_dialog (GValue* value, gpointer v_object);
-void value_take_preferences_dialog (GValue* value, gpointer v_object);
-gpointer value_get_preferences_dialog (const GValue* value);
-GType preferences_dialog_get_type (void) G_GNUC_CONST;
 void indicate_on_preferences_update (Indicate* self, PreferencesDialog* sender);
 static void _indicate_on_preferences_update_preferences_dialog_preferences_update (PreferencesDialog* _sender, gpointer self);
 void preferences_dialog_show (PreferencesDialog* self);
@@ -984,14 +986,17 @@ static void _indicate_on_preferences_update_preferences_dialog_preferences_updat
 
 static void indicate_on_preferences_clicked (Indicate* self, GtkWidget* sender) {
 	PreferencesDialog* _tmp0_;
-	PreferencesDialog* dialog;
+	PreferencesDialog* _tmp1_;
+	PreferencesDialog* _tmp2_;
 	g_return_if_fail (self != NULL);
 	g_return_if_fail (sender != NULL);
 	_tmp0_ = preferences_dialog_new ();
-	dialog = _tmp0_;
-	g_signal_connect (dialog, "preferences-update", (GCallback) _indicate_on_preferences_update_preferences_dialog_preferences_update, self);
-	preferences_dialog_show (dialog);
-	_preferences_dialog_unref0 (dialog);
+	_preferences_dialog_unref0 (self->priv->dialog);
+	self->priv->dialog = _tmp0_;
+	_tmp1_ = self->priv->dialog;
+	g_signal_connect (_tmp1_, "preferences-update", (GCallback) _indicate_on_preferences_update_preferences_dialog_preferences_update, self);
+	_tmp2_ = self->priv->dialog;
+	preferences_dialog_show (_tmp2_);
 }
 
 
@@ -1053,7 +1058,6 @@ static void indicate_on_about_clicked (Indicate* self, GtkWidget* sender) {
 		GtkBuilder* builder;
 		GObject* _tmp1_ = NULL;
 		GtkDialog* _tmp2_;
-		GtkDialog* dialog;
 		GtkDialog* _tmp3_;
 		GtkDialog* _tmp4_;
 		_tmp0_ = gtk_builder_new ();
@@ -1065,12 +1069,12 @@ static void indicate_on_about_clicked (Indicate* self, GtkWidget* sender) {
 		}
 		_tmp1_ = gtk_builder_get_object (builder, "about_dialog");
 		_tmp2_ = _g_object_ref0 (GTK_IS_DIALOG (_tmp1_) ? ((GtkDialog*) _tmp1_) : NULL);
-		dialog = _tmp2_;
-		_tmp3_ = dialog;
+		_g_object_unref0 (self->priv->about_dialog);
+		self->priv->about_dialog = _tmp2_;
+		_tmp3_ = self->priv->about_dialog;
 		gtk_dialog_run (_tmp3_);
-		_tmp4_ = dialog;
+		_tmp4_ = self->priv->about_dialog;
 		gtk_widget_hide ((GtkWidget*) _tmp4_);
-		_g_object_unref0 (dialog);
 		_g_object_unref0 (builder);
 	}
 	goto __finally7;
@@ -1228,6 +1232,8 @@ static void indicate_finalize (Indicate* obj) {
 	_g_object_unref0 (self->priv->how_many);
 	_g_object_unref0 (self->priv->menu_execute);
 	_update_checker_unref0 (self->priv->checker);
+	_preferences_dialog_unref0 (self->priv->dialog);
+	_g_object_unref0 (self->priv->about_dialog);
 }
 
 

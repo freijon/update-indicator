@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-27 20:05+0200\n"
+"POT-Creation-Date: 2012-03-30 08:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,7 +34,7 @@ msgid "<b>Upgrade tool</b>"
 msgstr ""
 
 #: UpdateIndicator.glade:304
-msgid "Display number of updates in icon:"
+msgid "Display number of updates in icon"
 msgstr ""
 
 #: UpdateIndicator.glade:196
@@ -54,11 +54,15 @@ msgid "Report a bug..."
 msgstr ""
 
 #: UpdateIndicator.glade:232
-msgid "Show notifications:"
+msgid "Show notifications"
 msgstr ""
 
 #: UpdateIndicator.glade:289
-msgid "Show passive icon:"
+msgid "Show passive icon"
+msgstr ""
+
+#: UpdateIndicator.glade:167
+msgid "Show updates in update-manager"
 msgstr ""
 
 #: UpdateIndicator.glade:15
@@ -79,6 +83,14 @@ msgstr ""
 
 #: UpdateIndicator.glade:65
 msgid "Update Indicator Preferences"
+msgstr ""
+
+#: UpdateIndicator.glade:169
+msgid "Upgrade in background"
+msgstr ""
+
+#: UpdateIndicator.glade:168
+msgid "Upgrade using update-manager"
 msgstr ""
 
 #: UpdateIndicator.glade:11

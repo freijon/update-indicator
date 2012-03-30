@@ -32,8 +32,10 @@ public class Indicate
 	private Gtk.Menu menu;
 	private Gtk.MenuItem how_many;
 	private Gtk.MenuItem menu_execute;
-	
+
 	private UpdateChecker checker;
+	private PreferencesDialog dialog;
+	private Gtk.Dialog about_dialog;
 	
 	private const string ACTIVE_ICON = "/usr/local/share/update_indicator/software-update-available.png";
 	private const string ACTIVE_ICON_EMPTY = "/usr/local/share/update_indicator/software-update-available-empty.png";
@@ -260,7 +262,7 @@ public class Indicate
 	
 	private void on_preferences_clicked (Gtk.Widget sender)
 	{
-		var dialog = new PreferencesDialog();
+		dialog = new PreferencesDialog();
 		dialog.preferences_update.connect(on_preferences_update);
 		dialog.show ();
 	}
@@ -291,9 +293,9 @@ public class Indicate
 		{
 			var builder = new Gtk.Builder();
 			builder.add_from_file (GLADE_FILE);
-			Gtk.Dialog dialog = builder.get_object ("about_dialog") as Gtk.Dialog;
-			dialog.run ();
-			dialog.hide ();
+			about_dialog = builder.get_object ("about_dialog") as Gtk.Dialog;
+			about_dialog.run ();
+			about_dialog.hide ();
 		}
 		catch (Error e)
 		{

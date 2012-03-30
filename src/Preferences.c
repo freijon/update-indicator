@@ -161,7 +161,6 @@ PreferencesDialog* preferences_dialog_construct (GType object_type) {
 		GtkSwitch* _tmp32_;
 		GtkGrid* _tmp33_;
 		GtkSwitch* _tmp34_;
-		GtkDialog* _tmp35_;
 		_tmp0_ = gtk_builder_new ();
 		_g_object_unref0 (self->priv->builder);
 		self->priv->builder = _tmp0_;
@@ -225,8 +224,6 @@ PreferencesDialog* preferences_dialog_construct (GType object_type) {
 		_tmp33_ = grid_indicator;
 		_tmp34_ = self->priv->checkbutton_show_number;
 		gtk_grid_attach (_tmp33_, (GtkWidget*) _tmp34_, 1, 1, 1, 1);
-		_tmp35_ = self->priv->dialog;
-		gtk_widget_show_all ((GtkWidget*) _tmp35_);
 		_g_object_unref0 (grid_notification);
 		_g_object_unref0 (grid_indicator);
 	}
@@ -234,15 +231,15 @@ PreferencesDialog* preferences_dialog_construct (GType object_type) {
 	__catch20_g_error:
 	{
 		GError* e = NULL;
-		FILE* _tmp36_;
-		GError* _tmp37_;
-		const gchar* _tmp38_;
+		FILE* _tmp35_;
+		GError* _tmp36_;
+		const gchar* _tmp37_;
 		e = _inner_error_;
 		_inner_error_ = NULL;
-		_tmp36_ = stderr;
-		_tmp37_ = e;
-		_tmp38_ = _tmp37_->message;
-		fprintf (_tmp36_, "Could not load UI: %s\n", _tmp38_);
+		_tmp35_ = stderr;
+		_tmp36_ = e;
+		_tmp37_ = _tmp36_->message;
+		fprintf (_tmp35_, "Could not load UI: %s\n", _tmp37_);
 		_g_error_free0 (e);
 	}
 	__finally20:
@@ -267,24 +264,27 @@ void preferences_dialog_show (PreferencesDialog* self) {
 	{
 		GtkDialog* _tmp0_;
 		GtkDialog* _tmp1_;
+		GtkDialog* _tmp2_;
 		_tmp0_ = self->priv->dialog;
-		gtk_dialog_run (_tmp0_);
+		gtk_widget_show_all ((GtkWidget*) _tmp0_);
 		_tmp1_ = self->priv->dialog;
-		gtk_widget_hide ((GtkWidget*) _tmp1_);
+		gtk_dialog_run (_tmp1_);
+		_tmp2_ = self->priv->dialog;
+		gtk_widget_hide ((GtkWidget*) _tmp2_);
 	}
 	goto __finally21;
 	__catch21_g_error:
 	{
 		GError* e = NULL;
-		FILE* _tmp2_;
-		GError* _tmp3_;
-		const gchar* _tmp4_;
+		FILE* _tmp3_;
+		GError* _tmp4_;
+		const gchar* _tmp5_;
 		e = _inner_error_;
 		_inner_error_ = NULL;
-		_tmp2_ = stderr;
-		_tmp3_ = e;
-		_tmp4_ = _tmp3_->message;
-		fprintf (_tmp2_, "Could not show UI: %s\n", _tmp4_);
+		_tmp3_ = stderr;
+		_tmp4_ = e;
+		_tmp5_ = _tmp4_->message;
+		fprintf (_tmp3_, "Could not show UI: %s\n", _tmp5_);
 		_g_error_free0 (e);
 	}
 	__finally21:
