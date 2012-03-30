@@ -37,7 +37,8 @@ public class UpdateChecker
 			string output = "";
 			try
 			{
-				Process.spawn_command_line_sync ("/usr/lib/update-notifier/apt-check -p", out output, out output); //Packages are written to stderr, so the first output is just a dummy.
+				//Packages are written to stderr, so the first output is just a dummy.
+				Process.spawn_command_line_sync ("/usr/lib/update-notifier/apt-check -p", out output, out output);
 				if (output.length > 0)
 					output+="\n";
 			}
